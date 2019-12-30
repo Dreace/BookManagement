@@ -1,4 +1,4 @@
-name: Node CI
+name: Deploy To Server
 
 on: [push]
 
@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v1
@@ -36,7 +36,7 @@ jobs:
         cd dist
         git init
         git add .
-        git commit -m "deploy on server"
+        git commit -m "deploy to server"
         git remote add origin git@dreace.top:/var/repo/book-management.git
         git push -u origin master
       env:
