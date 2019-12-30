@@ -38,6 +38,6 @@ jobs:
         git add .
         git commit -m "deploy to server"
         git remote add origin git@dreace.top:/var/repo/book-management.git
-        git push -u origin master
+        git push -u origin master --force
       env:
         CI: true
