@@ -13,13 +13,17 @@
                         <div class="grid-content bg-purple-light"></div>
                     </el-col>
                     <el-col :span="6">
-                        <div class="grid-content bg-purple"></div>
+                        <div class="grid-content bg-purple">
+                            <router-link to="/login">
+                                <el-link>登录</el-link>
+                            </router-link>
+                        </div>
                     </el-col>
                 </el-row>
 
             </el-header>
             <el-main>
-                <router-view></router-view>
+                <router-view/>
             </el-main>
         </el-container>
     </div>
