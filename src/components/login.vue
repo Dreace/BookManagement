@@ -19,7 +19,6 @@
 </template>
 
 <script>
-    import {Message} from "element-ui"
 
     export default {
         name: "login",
@@ -43,6 +42,7 @@
         },
         methods: {
             onSubmit: function () {
+                let vm = this;
                 this.$api({
                     method: 'post',
                     url: '/Login',
@@ -50,12 +50,14 @@
                         name: this.form.userName,
                         password: this.form.password
                     }
-                }).then(res => {
-                    Message({
-                        message: res.message,
-                        type: 'success',
-                        duration: 5 * 1000
-                    });
+                }).then((res) => {
+                    vm.$store.commit("change", {
+                        isLogin: true,
+                        name: res.data.name,
+                        permission: res.data.permission
+                    })
+                }).catch((error) => {
+                    window.console.error(error)
                 })
             }
         }
