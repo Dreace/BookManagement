@@ -14,6 +14,9 @@
                     </el-col>
                     <el-col :span="6">
                         <div class="grid-content bg-purple">
+                            <router-link to="/cardManagement">
+                                <el-link>借书卡管理</el-link>
+                            </router-link>
                             <router-link to="/login">
                                 <el-link>登录</el-link>
                             </router-link>
