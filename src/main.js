@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/display.css';
 import "./assets/icon/iconfont"
 import api from "./utils/api"
 import Login from './components/login'
+import CardManagement from "./components/CardManagement";
 
 Vue.use(ElementUI);
 Vue.use(VueRouter);
@@ -16,7 +17,8 @@ Vue.config.productionTip = false;
 let router = new VueRouter({
     mode: 'history',
     routes: [
-        {path: '/login', component: Login}
+        {path: '/login', component: Login},
+        {path: '/cardManagement', component: CardManagement}
     ]
 });
 
