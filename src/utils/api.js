@@ -2,7 +2,7 @@ import axios from 'axios'
 import {Message} from 'element-ui'
 
 axios.defaults.baseURL = 'https://book-api.dreace.top';
-
+// axios.defaults.baseURL = 'http://127.0.0.1:105';
 const api = axios.create({
     timeout: 5000,
     withCredentials: true

@@ -7,7 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import 'element-ui/lib/theme-chalk/display.css';
 import "./assets/icon/iconfont"
 import api from "./utils/api"
-import Login from './components/login'
+import Login from './components/Login'
 import CardManagement from "./components/CardManagement";
 
 Vue.use(ElementUI);

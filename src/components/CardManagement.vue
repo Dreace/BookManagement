@@ -4,7 +4,7 @@
             <el-row>
                 <el-col :span="8">
                     <div class="grid-content">
-                        <el-button type="primary" @click="transactCard()">办理借书卡</el-button>
+                        <el-button type="primary" @click="transactCard">办理借书卡</el-button>
                     </div>
                 </el-col>
                 <el-col :span="8">
@@ -13,8 +13,8 @@
                 <el-col :span="8">
                     <div class="grid-content">
                         <el-input v-model="inputValue" placeholder="输入搜索内容">
-                            <el-select v-model="searchID" slot="prepend" placeholder="请选择">
-                                <el-option label="卡号" value="cardID"/>
+                            <el-select v-model="searchType" slot="prepend" placeholder="请选择">
+                                <el-option label="卡号" value="card_id"/>
                                 <el-option label="姓名" value="cardholder"/>
                                 <el-option label="电话" value="telephone"/>
                                 <el-option label="邮箱" value="email"/>
@@ -34,7 +34,7 @@
                 <el-table-column
                         prop="cardID"
                         label="卡号"
-                        width="100">
+                        width="200">
                 </el-table-column>
                 <el-table-column
                         label="姓名"
@@ -45,17 +45,17 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        label="办卡日期"
-                        width="150">
-                    <template slot-scope="scope">
-                        <i class="el-icon-time"/>
-                        <span style="margin-left: 10px">{{ scope.row.date }}</span>
+                        label="开卡日期"
+                        >
+                    <template slot-scope="scope" v-if="scope.row.date">
+                        <i class="el-icon-date"/>
+                        <span style="margin-left: 10px">{{ new Date(scope.row.date*1000).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
                         label="联系电话">
                     <template slot-scope="scope">
-                        <i class="el-icon-phone"/>
+                        <i class="el-icon-phone-outline"/>
                         <span style="margin-left: 10px">{{ scope.row.telephone }}</span>
                     </template>
                 </el-table-column>
@@ -75,18 +75,18 @@
                                 size="mini"
                                 type="warning"
                                 plain
-                                @click="cardHistory(scope.$index, scope.row)">历史
+                                @click="cardHistory(scope.row)">历史
                         </el-button>
                         <el-button
                                 size="mini"
                                 type="primary"
                                 plain
-                                @click="cardReplenish(scope.$index, scope.row)">补办
+                                @click="cardReplenish(scope.row)">补办
                         </el-button>
                         <el-button
                                 size="mini"
                                 type="danger"
-                                @click="cardDelete(scope.$index, scope.row)">注销
+                                @click="cardDelete(scope.row)">注销
                         </el-button>
                     </template>
                 </el-table-column>
@@ -100,154 +100,97 @@
         name: 'CardManagement',
         data() {
             return {
-                testTable: [{
-                    cardID: '123456',
-                    cardholder: '张三',
-                    date: '2019/12/01',
-                    telephone: '25434236456',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123466',
-                    cardholder: '李四',
-                    date: '2019/12/02',
-                    telephone: '34563354657',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123556',
-                    cardholder: '王五',
-                    date: '2019/12/03',
-                    telephone: '56785675678',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '124456',
-                    cardholder: '赵六',
-                    date: '2019/12/04',
-                    telephone: '56745647567',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '133456',
-                    cardholder: '张八',
-                    date: '2019/12/05',
-                    telephone: '12345678910',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '223456',
-                    cardholder: '李九',
-                    date: '2019/12/06',
-                    telephone: '12345213455',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123458',
-                    cardholder: '赵十',
-                    date: '2019/12/07',
-                    telephone: '12435632323',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123476',
-                    cardholder: '钟十一',
-                    date: '2019/12/08',
-                    telephone: '43576874567',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123656',
-                    cardholder: '张九',
-                    date: '2019/12/09',
-                    telephone: '45678356345',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '125456',
-                    cardholder: '张一',
-                    date: '2019/12/10',
-                    telephone: '12345633336',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123466',
-                    cardholder: '李四',
-                    date: '2019/12/02',
-                    telephone: '34563354657',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123556',
-                    cardholder: '王五',
-                    date: '2019/12/03',
-                    telephone: '56785675678',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '124456',
-                    cardholder: '赵六',
-                    date: '2019/12/04',
-                    telephone: '56745647567',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '133456',
-                    cardholder: '张八',
-                    date: '2019/12/05',
-                    telephone: '12345678910',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '223456',
-                    cardholder: '李九',
-                    date: '2019/12/06',
-                    telephone: '12345213455',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123458',
-                    cardholder: '赵十',
-                    date: '2019/12/07',
-                    telephone: '12435632323',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123476',
-                    cardholder: '钟十一',
-                    date: '2019/12/08',
-                    telephone: '43576874567',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '123656',
-                    cardholder: '张九',
-                    date: '2019/12/09',
-                    telephone: '45678356345',
-                    email: '123456789@126.com'
-                }, {
-                    cardID: '125456',
-                    cardholder: '张一',
-                    date: '2019/12/10',
-                    telephone: '12345633336',
-                    email: '123456789@126.com'
-                }],
                 cardTable: [],
                 inputValue: '',
                 select: '卡号',
-                searchID: "cardID"
+                searchType: "card_id"
             }
         },
         watch: {
-            inputValue: function (newInputValue) {
-                this.cardTable = newInputValue ? this.testTable.filter(this.createStateFilter(newInputValue)) : this.testTable
+            inputValue(newInputValue) {
+                if (newInputValue && newInputValue.length > 0) {
+                    this.searchCard(newInputValue, this.searchType)
+                }
+            },
+            searchType(newSearchType) {
+                this.searchCard(this.inputValue, newSearchType)
             }
         },
         methods: {
-            cardHistory(index, row) {
-                window.console.log(index, row);
+            searchCard(keywords, type) {
+                let vm = this;
+                this.$api({
+                    method: "GET",
+                    url: "GetCardList",
+                    params: {
+                        keywords: keywords,
+                        type: type
+                    }
+                }).then(res => vm.cardTable = res.data);
             },
-            cardDelete(index, row) {
-                window.console.log(index, row);
+            cardHistory(row) {
+                window.console.log(row);
             },
-            cardReplenish(index, row) {
-                window.console.log(index, row);
+            cardDelete(row) {
+                this.$confirm('将注销卡号 ' + row.cardID + ', 是否继续?', '确认注销', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api({
+                        method: "POST",
+                        url: "/DeleteCard",
+                        data: {
+                            cardID: row.cardID
+                        }
+                    }).then(() => {
+                        this.$message({
+                            type: 'success',
+                            message: '注销成功'
+                        });
+                        this.searchCard(this.inputValue, this.searchType)
+                    }).catch((error) => {
+                        window.console.log(error)
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                });
             },
+            cardReplenish(row) {
+                this.$confirm('将为卡号 ' + row.cardID + ' 补办, 是否继续?', '确认补办', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api({
+                        method: "POST",
+                        url: "/ReissueCard",
+                        data: {
+                            cardID: row.cardID
+                        }
+                    }).then(() => {
+                        this.$message({
+                            type: 'success',
+                            message: '补办成功'
+                        });
+                        this.searchCard(this.inputValue, this.searchType)
+                    }).catch((error) => {
+                        window.console.log(error)
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                });
+            }
+            ,
             transactCard() {
                 window.console.log("transact");
-            },
-            createStateFilter(queryString) {
-                let vm = this;
-                return (state) => {
-                    return (state[vm.searchID].toLowerCase().indexOf(queryString.toLowerCase()) !== -1);
-                };
             }
-        },
-        mounted() {
-            this.cardTable = this.testTable;
         }
     }
 </script>

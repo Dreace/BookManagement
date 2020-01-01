@@ -4,7 +4,7 @@
             <el-header>
                 <el-row type="flex" class="row-bg" justify="space-around">
 
-                    <el-col :span="6" class="app">
+                    <el-col :span="3" class="app">
                         <router-link to="/">
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-book"/>
@@ -12,11 +12,18 @@
                             <label class="app-name hidden-sm-and-down">简单图书</label>
                         </router-link>
                     </el-col>
-                    <el-col :span="6">
-                        <div class="grid-content bg-purple-light"></div>
+                    <el-col :span="10">
+                        <el-menu mode="horizontal" v-if="$store.state.userInfo.isLogin">
+                            <el-menu-item index="1">
+                                <router-link to="/cardManagement">
+                                    借书卡管理
+                                </router-link>
+                            </el-menu-item>
+                        </el-menu>
+
                     </el-col>
                     <el-col :span="3">
-                        <div class="grid-content bg-purple header-right">
+                        <div class=" header-right">
                             <router-link v-if="!$store.state.userInfo.isLogin" to="/login">
                                 <el-button icon="el-icon-user">登录</el-button>
                             </router-link>
@@ -24,7 +31,7 @@
                                 <el-button>
                                     我的<i class="el-icon-arrow-down el-icon--right"/>
                                 </el-button>
-                                <el-dropdown-menu slot="dropdown" >
+                                <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item command="logOut">登出</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
@@ -44,6 +51,11 @@
 
     export default {
         name: 'app',
+        data() {
+            return {
+                menuIndex: 0
+            }
+        },
         methods: {
             handleCommand: function (command) {
                 if (command === "logOut") {
@@ -78,22 +90,20 @@
         margin-left: 20px;
     }
 
-    .bg-purple {
-        background: #d3dce6;
+    .el-menu.el-menu--horizontal {
+        border: none !important;
     }
 
-    .bg-purple-light {
-        background: #e5e9f2;
-    }
-
-    .grid-content {
-        border-radius: 4px;
-        min-height: 36px;
+    .el-col {
+        display: flex;
+        align-items: center;
     }
 
     .row-bg {
-        padding: 10px 0;
-        background-color: #f9fafc;
+        /*padding: 10px 0;*/
+        /*background-color: #f9fafc;*/
+        border-bottom: solid 1px #e6e6e6;
+        height: 61px;
     }
 
     .icon {

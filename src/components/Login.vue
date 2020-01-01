@@ -57,7 +57,7 @@
                         permission: res.data.permission
                     })
                 }).catch((error) => {
-                    window.console.error(error)
+                    window.console.log(error)
                 })
             }
         }
