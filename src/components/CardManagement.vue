@@ -4,7 +4,7 @@
             <el-row>
                 <el-col :span="8">
                     <div class="grid-content">
-                        <el-button type="primary" @click="transactCard">办理借书卡</el-button>
+                        <el-button type="primary" @click="transactCardDialog = true">办理借书卡</el-button>
                     </div>
                 </el-col>
                 <el-col :span="8">
@@ -45,8 +45,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        label="开卡日期"
-                        >
+                        label="开卡日期">
                     <template slot-scope="scope" v-if="scope.row.date">
                         <i class="el-icon-date"/>
                         <span style="margin-left: 10px">{{ new Date(scope.row.date*1000).toLocaleString() }}</span>
@@ -92,6 +91,27 @@
                 </el-table-column>
             </el-table>
         </div>
+        <el-dialog title="办理借书卡"
+                   :visible.sync="transactCardDialog"
+                   width="30%">
+            <el-form :model="form" label-width="80px"
+                     :rules="rules" ref="ruleForm" class="transactForm">
+                <el-form-item label="姓名" prop="name">
+                    <el-input v-model="form.name" autocomplete="off"/>
+                </el-form-item>
+                <el-form-item label="联系电话" prop="telephone">
+                    <el-input v-model="form.telephone" autocomplete="off"/>
+                </el-form-item>
+                <el-form-item label="邮箱地址" prop="email">
+                    <el-input v-model="form.email" autocomplete="off"/>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" @click="confirmTransactCard('ruleForm')" :loading="isLoading">办理</el-button>
+                <el-button @click="cancelTransactCard">取消</el-button>
+            </div>
+
+        </el-dialog>
     </div>
 </template>
 
@@ -103,8 +123,30 @@
                 cardTable: [],
                 inputValue: '',
                 select: '卡号',
-                searchType: "card_id"
+                searchType: "card_id",
+                transactCardDialog: false,
+                isLoading: false,
+                form: {
+                    name: '',
+                    telephone: '',
+                    email: ''
+                },
+                rules: {
+                    name: [{required: true, type: "string", message: '输入姓名', trigger: 'blur'},
+                        {min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur'}],
+                    telephone: [{
+                        required: true,
+                        pattern: /^1[0-9]{10}$|^[569][0-9]{7}$/,
+                        message: '输入正确电话号码',
+                        trigger: 'blur'
+                    }],
+                    email: [{required: true, message: '请输入邮箱地址', trigger: ['blur', 'change']},
+                        {type: 'email', message: '输入正确的邮箱地址', trigger: 'blur'}]
+                }
             }
+        },
+        mounted() {
+            this.searchCard('','card_id')
         },
         watch: {
             inputValue(newInputValue) {
@@ -186,11 +228,54 @@
                         message: '已取消操作'
                     });
                 });
+            },
+            confirmTransactCard(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.isLoading = true;
+                        this.$confirm('将为"' + this.form.name + '"办理借书卡', '确认', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            this.$api({
+                                method: "POST",
+                                url: "/ApplyCard",
+                                data: {
+                                    cardholder: this.form.name,
+                                    telephone: this.form.telephone,
+                                    email: this.form.email
+                                }
+                            }).then(() => {
+                                this.$message({
+                                    type: 'success',
+                                    message: '办理成功'
+                                });
+                                this.transactCardDialog = false;
+                            }).catch((error) => {
+                                window.console.log(error)
+                            }).finally(() => this.isLoading = false)
+                        }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '已取消操作'
+                            });
+                            this.isLoading = false;
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+
+            },
+            cancelTransactCard() {
+                this.transactCardDialog = false
+                this.$message({
+                    type: 'info',
+                    message: '已取消操作'
+                });
             }
-            ,
-            transactCard() {
-                window.console.log("transact");
-            }
+
         }
     }
 </script>
@@ -215,4 +300,8 @@
         margin-top: 10px;
     }
 
+    .transactForm{
+        width: 20vw;
+        margin: 0 auto;
+    }
 </style>
