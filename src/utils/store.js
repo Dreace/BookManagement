@@ -1,6 +1,7 @@
 import Vuex from "vuex";
 import Vue from 'vue'
-
+import axios from "axios"
+import apiUrl from "@/utils/api.config";
 Vue.use(Vuex);
 const store = new Vuex.Store({
         state: {
@@ -22,6 +23,7 @@ const store = new Vuex.Store({
                 if (localStorage) {
                     localStorage.removeItem("userInfo")
                 }
+                axios.post(apiUrl+"/Logout");
             },
             change(state, payload) {
                 state.userInfo = payload;

@@ -13,11 +13,11 @@
                         </router-link>
                     </el-col>
                     <el-col :span="10">
-                        <el-menu mode="horizontal" v-if="$store.state.userInfo.isLogin">
-                            <el-menu-item index="1">
-                                <router-link to="/cardManagement">
-                                    借书卡管理
-                                </router-link>
+                        <el-menu mode="horizontal" router v-if="$store.state.userInfo.isLogin">
+                            <el-menu-item index="/cardManagement">
+                                <!--                                <router-link to="/cardManagement">-->
+                                借书卡管理
+                                <!--                                </router-link>-->
                             </el-menu-item>
                         </el-menu>
 
