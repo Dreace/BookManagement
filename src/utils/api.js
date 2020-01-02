@@ -1,10 +1,10 @@
 import axios from 'axios'
 import {Message} from 'element-ui'
+import apiUrl from "@/utils/api.config";
 
-axios.defaults.baseURL = 'https://book-api.dreace.top';
-
+axios.defaults.baseURL = apiUrl;
 const api = axios.create({
-    timeout: 5000,
+    timeout: 60000,
     withCredentials: true
 });
 
@@ -18,6 +18,10 @@ api.interceptors.response.use(
     res => {
         let data = res.data;
         if (data.code !== 0) {
+            if (data.code === -10) {
+                setTimeout(() => top.location.href = '/login', 1000)
+
+            }
             Message({
                 message: data.message,
                 type: 'error',
