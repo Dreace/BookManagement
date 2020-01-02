@@ -38,7 +38,6 @@
                         </div>
                     </el-col>
                 </el-row>
-
             </el-header>
             <el-main>
                 <router-view/>
@@ -77,7 +76,6 @@
     #app {
         font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     }
-
     .app {
         font-size: 1.5em;
     }
@@ -99,14 +97,12 @@
         display: flex;
         align-items: center;
     }
-
     .row-bg {
         /*padding: 10px 0;*/
         /*background-color: #f9fafc;*/
         border-bottom: solid 1px #e6e6e6;
         height: 61px;
     }
-
     .icon {
         width: 1em;
         height: 1em;
