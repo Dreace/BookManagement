@@ -4,7 +4,7 @@ import apiUrl from "@/utils/api.config";
 
 axios.defaults.baseURL = apiUrl;
 const api = axios.create({
-    timeout: 5000,
+    timeout: 60000,
     withCredentials: true
 });
 

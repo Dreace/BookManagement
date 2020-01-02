@@ -1,3 +1,3 @@
 module.exports = {
-    // configureWebpack: { externals: ['vue', 'axios',"vue-router","element-ui"] }
+    // configureWebpack: {externals: {'element-ui': 'ELEMENT','vue': 'Vue',}}
 };
