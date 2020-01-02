@@ -112,7 +112,7 @@
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="cancelAddBook">取 消</el-button>
-                    <el-button type="primary" @click="confirmAddBook('ruleForm')" :loading="isLoading">确 定</el-button>
+                    <el-button type="primary" @click="confirmAddBook('ruleForm')" :loading="isLoadingAdd">确 定</el-button>
                 </div>
             </el-dialog>
             <el-dialog title="修改书籍" :visible.sync="dialogModifyBookVisible" width="35%">
@@ -137,8 +137,8 @@
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogModifyBookVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="dialogModifyBookVisible = false">确 定</el-button>
+                    <el-button @click="cancelBookEdit">取 消</el-button>
+                    <el-button type="primary" @click="bookEdit()" :loading="isLoadingEdit">确 定</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -176,7 +176,7 @@
             confirmAddBook(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.isLoading = true;
+                        this.isLoadingAdd = true;
                         this.$confirm('将增添书名为' + this.ruleForm.name + '的图书', '确认添加', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
@@ -202,13 +202,13 @@
                                 this.dialogAddBookVisible = false;
                             }).catch((error) => {
                                 window.console.log(error)
-                            }).finally(() => this.isLoading = false)
+                            }).finally(() => this.isLoadingAdd = false)
                         }).catch(() => {
                             this.$message({
                                 type: 'info',
                                 message: '已取消操作'
                             });
-                            this.isLoading = false;
+                            this.isLoadingAdd = false;
                         });
                     } else {
                         return false;
@@ -227,6 +227,52 @@
             bookEdit(row) {
                 this.dialogModifyBookVisible = true
                 this.ruleForm = Object.assign({}, row)
+                // this.$refs[formName].validate((valid) => {
+                //     if (valid) {
+                //         this.isLoadingEdit = true;
+                //         this.$confirm('将修改ID为' + this.ruleForm.bookID + '的图书', '确认修改', {
+                //             confirmButtonText: '确定',
+                //             cancelButtonText: '取消',
+                //             type: 'warning'
+                //         }).then(() => {
+                //             this.$api({
+                //                 method: "POST",
+                //                 url: "/UpdateBook",
+                //                 data: {
+                //                     name: this.ruleForm.name,
+                //                     ISBN: this.ruleForm.ISBN,
+                //                     author: this.ruleForm.author,
+                //                     press: this.ruleForm.press,
+                //                     price: this.ruleForm.price
+                //                 }
+                //             }).then(() => {
+                //                 this.$message({
+                //                     type: 'success',
+                //                     message: '修改成功'
+                //                 });
+                //                 this.searchBook('','book_id')
+                //                 this.dialogModifyBookVisible = false;
+                //             }).catch((error) => {
+                //                 window.console.log(error)
+                //             }).finally(() => this.isLoadingEdit = false)
+                //         }).catch(() => {
+                //             this.$message({
+                //                 type: 'info',
+                //                 message: '已取消操作'
+                //             });
+                //             this.isLoadingEdit = false;
+                //         });
+                //     } else {
+                //         return false;
+                //     }
+                // });
+            },
+            cancelBookEdit(){
+                this.dialogModifyBookVisible = false
+                this.$message({
+                    type: 'info',
+                    message: '已取消操作'
+                });
             },
             //删除书籍信息
             bookDelete(row) {
@@ -304,7 +350,8 @@
                 timeout: null,
                 searchType: "book_id",
 
-                isLoading: false,
+                isLoadingAdd: false,
+                isLoadingEdit: false,
                 dialogAddBookVisible: false,
                 dialogReturnBookVisible: false,
                 dialogModifyBookVisible: false,
