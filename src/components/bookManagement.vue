@@ -10,6 +10,8 @@
                     <el-table
                             :data="bookTable"
                             class="book-table"
+                            border
+                            height="530"
                             style="width: 100%">
                         <el-table-column
                                 prop="bookID"
@@ -84,30 +86,33 @@
                     <el-button type="primary" @click="dialogReturnBookVisible = false">确 定</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="增加书籍" :visible.sync="dialogAddBookVisible" width="35%">
-                <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+            <el-dialog title="增加书籍"
+                       :visible.sync="dialogAddBookVisible"
+                       width="35%">
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm"
+                         label-width="100px" class="demo-ruleForm">
                     <el-form-item label="书籍编号" prop="bookID">
-                        <el-input v-model="form.bookID"/>
+                        <el-input v-model="ruleForm.bookID"/>
                     </el-form-item>
                     <el-form-item label="书籍名称" prop="name">
-                        <el-input v-model="form.name"/>
+                        <el-input v-model="ruleForm.name"/>
                     </el-form-item>
                     <el-form-item label="ISBN" prop="ISBN">
-                        <el-input v-model="form.ISBN"/>
+                        <el-input v-model="ruleForm.ISBN"/>
                     </el-form-item>
                     <el-form-item label="作者" prop="author">
-                        <el-input v-model="form.author"/>
+                        <el-input v-model="ruleForm.author"/>
                     </el-form-item>
                     <el-form-item label="出版社" prop="press">
-                        <el-input v-model="form.press"/>
+                        <el-input v-model="ruleForm.press"/>
                     </el-form-item>
                     <el-form-item label="价格" prop="price">
-                        <el-input v-model="form.price"/>
+                        <el-input v-model="ruleForm.price"/>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogAddBookVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="dialogAddBookVisible = false">确 定</el-button>
+                    <el-button @click="cancelAddBook">取 消</el-button>
+                    <el-button type="primary" @click="confirmAddBook('ruleForm')" :loading="isLoading">确 定</el-button>
                 </div>
             </el-dialog>
             <el-dialog title="修改书籍" :visible.sync="dialogModifyBookVisible" width="35%">
@@ -167,7 +172,57 @@
                     }
                 }).then(res => vm.bookTable = res.data);
             },
+            //增加书籍确认
+            confirmAddBook(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.isLoading = true;
+                        this.$confirm('将增添书名为' + this.ruleForm.name + '的图书', '确认添加', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            this.$api({
+                                method: "POST",
+                                url: "/AddBook",
+                                data: {
+                                    bookID: this.ruleForm.bookID,
+                                    name: this.ruleForm.name,
+                                    ISBN: this.ruleForm.ISBN,
+                                    author: this.ruleForm.author,
+                                    press: this.ruleForm.press,
+                                    price: this.ruleForm.price
+                                }
+                            }).then(() => {
+                                this.$message({
+                                    type: 'success',
+                                    message: '添加成功'
+                                });
+                                this.searchBook('','book_id')
+                                this.dialogAddBookVisible = false;
+                            }).catch((error) => {
+                                window.console.log(error)
+                            }).finally(() => this.isLoading = false)
+                        }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '已取消操作'
+                            });
+                            this.isLoading = false;
+                        });
+                    } else {
+                        return false;
+                    }
+                });
 
+            },
+            cancelAddBook() {
+                this.dialogAddBookVisible = false
+                this.$message({
+                    type: 'info',
+                    message: '已取消操作'
+                });
+            },
             //修改书籍信息
             bookEdit(row) {
                 this.dialogModifyBookVisible = true
@@ -191,7 +246,7 @@
                             type: 'success',
                             message: '删除成功'
                         });
-                        this.searchBook(this.inputValue, this.searchType)
+                        this.searchBook('','book_id')
                     }).catch((error) => {
                         window.console.log(error)
                     })
@@ -249,6 +304,7 @@
                 timeout: null,
                 searchType: "book_id",
 
+                isLoading: false,
                 dialogAddBookVisible: false,
                 dialogReturnBookVisible: false,
                 dialogModifyBookVisible: false,
@@ -275,7 +331,7 @@
                 rules: {
                     bookID: [
                         {required: true, message: '请输入书籍编号', trigger: 'blur'},
-                        {min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur'}
+                        {min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur'}
                     ],
                     name: [
                         {required: true, message: '请输入书籍名称', trigger: 'blur'},
