@@ -113,43 +113,39 @@
         </el-dialog>
         <el-dialog title="借书历史"
                    :visible.sync="cardHistoryDialog"
-                   width="70%"
+                   width="1000px"
                    @close="closeCardHistory">
-            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow">
+            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow"  height="450">
                 <el-table-column
                         label="单号"
-                        width="180"
+                        width="300px"
                         prop="slipID">
                 </el-table-column>
                 <el-table-column
                         label="借书日期"
-                        width="180">
+                        width="250px">
                     <template slot-scope="scope" v-if="scope.row.borrowingTime">
                         <span> {{  new Date(scope.row.borrowingTime*1000).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
                         label="截止日期"
-                        width="180">
+                        width="250px">
                     <template slot-scope="scope" v-if="scope.row.dueTime">
                         <span> {{  new Date(scope.row.dueTime*1000).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
                         label="书籍数量"
-                        width="180"
+                        width="90px"
                         prop="count">
                 </el-table-column>
                 <el-table-column type="expand">
                     <template slot-scope="scope">
-                        <el-table :data="scope.row.books">
+                        <el-table :data="scope.row.books" border>
                             <el-table-column
                                     label="书籍编号"
                                     prop="bookID">
-                            </el-table-column>
-                            <el-table-column
-                                    label="ISBN"
-                                    prop="ISBN">
                             </el-table-column>
                             <el-table-column
                                     label="书名"
@@ -164,8 +160,8 @@
                                     prop="press">
                             </el-table-column>
                             <el-table-column
-                                    label="价格"
-                                    prop="price">
+                                    label="归还日期"
+                                    prop="returnTime">
                             </el-table-column>
                         </el-table>
                     </template>
@@ -244,7 +240,7 @@
                     }
                 }).then(res => {
                     let bookMap = {};
-                    let bookHistoryTable=[];
+                    let bookHistoryTable = [];
                     for (let item of res.data) {
                         if (!bookMap[item.slipID]) {
                             bookMap[item.slipID] = []
@@ -255,28 +251,18 @@
                         bookHistoryTable.push({
                             slipID: slip_id,
                             count: bookMap[slip_id].length,
-                            borrowingTime: res.data[0].borrowingTime,
+                            borrowingTime: bookMap[slip_id][0].borrowingTime,
                             dueTime: bookMap[slip_id][0].dueTime,
                             books: bookMap[slip_id],
                         })
                     }
                     this.bookHistoryTable = bookHistoryTable;
-                    // let bookMap = new Map();
-                    // let bookHistoryTable = [];
-                    // let newBookID = [];
-                    // for (let item of res.data) {
-                    //     newBookID.push(item.slipID);
-                    //     bookMap[item.slipID] = newBookID;
-                    // }
-                    // for(let slip_id in bookMap){
-                    //     bookHistoryTable.push({
-                    //         slipID: slip_id,
-                    //     })
-                    // }
                 });
             },
             bookHistoryShow(row) {
-                window.console.log(row.books);
+                if(row.books[0].name){
+                    return
+                }
                 for (let book of row.books) {
                     this.$api({
                         method: "GET",
@@ -286,7 +272,10 @@
                             type: "book_id"
                         }
                     }).then(res => {
-                        window.console.log(res.data)
+                        book.author = res.data[0].author;
+                        book.press = res.data[0].press;
+                        book.returnTime = book.isRepaid ? new Date(book.returnTime * 1000).toLocaleDateString() : "未归还";
+                        this.$set(book, "name", res.data[0].name);
                     });
                 }
             },
@@ -398,6 +387,20 @@
 </script>
 
 <style>
+    .el-table__body-wrapper::-webkit-scrollbar{
+        width: 0;
+        /*width: 3px;*/
+    }
+    .el-table__body-wrapper::-webkit-scrollbar-thumb{
+        border-radius: 2px;
+        height: 50px;
+        background: #eee;
+    }
+    .el-table__body-wrapper::-webkit-scrollbar-track{
+        box-shadow: inset 0 0 5px white;
+        border-radius: 2px;
+        background: white;
+    }
     .el-select .el-input {
         width: 80px;
     }
