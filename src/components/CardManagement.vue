@@ -93,7 +93,7 @@
         </div>
         <el-dialog title="办理借书卡"
                    :visible.sync="transactCardDialog"
-                   width="30%">
+                   width="30%" @close="closeTransactCard">
             <el-form :model="form" label-width="80px"
                      :rules="rules" ref="ruleForm" class="transactForm">
                 <el-form-item label="姓名" prop="name">
@@ -108,9 +108,69 @@
             </el-form>
             <div slot="footer">
                 <el-button type="primary" @click="confirmTransactCard('ruleForm')" :loading="isLoading">办理</el-button>
-                <el-button @click="cancelTransactCard">取消</el-button>
+                <el-button @click="closeTransactCard">取消</el-button>
             </div>
-
+        </el-dialog>
+        <el-dialog title="借书历史"
+                   :visible.sync="cardHistoryDialog"
+                   width="70%"
+                   @close="closeCardHistory">
+            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow">
+                <el-table-column
+                        label="单号"
+                        width="180"
+                        prop="slipID">
+                </el-table-column>
+                <el-table-column
+                        label="借书日期"
+                        width="180">
+                    <template slot-scope="scope" v-if="scope.row.borrowingTime">
+                        <span> {{  new Date(scope.row.borrowingTime*1000).toLocaleString() }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="截止日期"
+                        width="180">
+                    <template slot-scope="scope" v-if="scope.row.dueTime">
+                        <span> {{  new Date(scope.row.dueTime*1000).toLocaleString() }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="书籍数量"
+                        width="180"
+                        prop="count">
+                </el-table-column>
+                <el-table-column type="expand">
+                    <template slot-scope="scope">
+                        <el-table :data="scope.row.books">
+                            <el-table-column
+                                    label="书籍编号"
+                                    prop="bookID">
+                            </el-table-column>
+                            <el-table-column
+                                    label="ISBN"
+                                    prop="ISBN">
+                            </el-table-column>
+                            <el-table-column
+                                    label="书名"
+                                    prop="name">
+                            </el-table-column>
+                            <el-table-column
+                                    label="作者"
+                                    prop="author">
+                            </el-table-column>
+                            <el-table-column
+                                    label="出版社"
+                                    prop="press">
+                            </el-table-column>
+                            <el-table-column
+                                    label="价格"
+                                    prop="price">
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                </el-table-column>
+            </el-table>
         </el-dialog>
     </div>
 </template>
@@ -121,10 +181,14 @@
         data() {
             return {
                 cardTable: [],
+                cardHistoryTable: [],
+                bookHistoryTable: [],
                 inputValue: '',
+                bookMap: new Map(),
                 select: '卡号',
                 searchType: "card_id",
                 transactCardDialog: false,
+                cardHistoryDialog: false,
                 isLoading: false,
                 form: {
                     name: '',
@@ -146,7 +210,7 @@
             }
         },
         mounted() {
-            this.searchCard('','card_id')
+            this.searchCard('', 'card_id')
         },
         watch: {
             inputValue(newInputValue) {
@@ -171,7 +235,60 @@
                 }).then(res => vm.cardTable = res.data);
             },
             cardHistory(row) {
-                window.console.log(row);
+                this.cardHistoryDialog = true;
+                this.$api({
+                    method: "GET",
+                    url: "GetCardBorrowList",
+                    params: {
+                        cardID: row.cardID
+                    }
+                }).then(res => {
+                    let bookMap = {};
+                    let bookHistoryTable=[];
+                    for (let item of res.data) {
+                        if (!bookMap[item.slipID]) {
+                            bookMap[item.slipID] = []
+                        }
+                        bookMap[item.slipID].push(item)
+                    }
+                    for (let slip_id in bookMap) {
+                        bookHistoryTable.push({
+                            slipID: slip_id,
+                            count: bookMap[slip_id].length,
+                            borrowingTime: res.data[0].borrowingTime,
+                            dueTime: bookMap[slip_id][0].dueTime,
+                            books: bookMap[slip_id],
+                        })
+                    }
+                    this.bookHistoryTable = bookHistoryTable;
+                    // let bookMap = new Map();
+                    // let bookHistoryTable = [];
+                    // let newBookID = [];
+                    // for (let item of res.data) {
+                    //     newBookID.push(item.slipID);
+                    //     bookMap[item.slipID] = newBookID;
+                    // }
+                    // for(let slip_id in bookMap){
+                    //     bookHistoryTable.push({
+                    //         slipID: slip_id,
+                    //     })
+                    // }
+                });
+            },
+            bookHistoryShow(row) {
+                window.console.log(row.books);
+                for (let book of row.books) {
+                    this.$api({
+                        method: "GET",
+                        url: "GetBookList",
+                        params: {
+                            keywords: book.bookID,
+                            type: "book_id"
+                        }
+                    }).then(res => {
+                        window.console.log(res.data)
+                    });
+                }
             },
             cardDelete(row) {
                 this.$confirm('将注销卡号 ' + row.cardID + ', 是否继续?', '确认注销', {
@@ -252,6 +369,7 @@
                                     message: '办理成功'
                                 });
                                 this.transactCardDialog = false;
+                                this.$refs.ruleForm.resetFields();
                             }).catch((error) => {
                                 window.console.log(error)
                             }).finally(() => this.isLoading = false)
@@ -266,16 +384,15 @@
                         return false;
                     }
                 });
-
             },
-            cancelTransactCard() {
-                this.transactCardDialog = false
-                this.$message({
-                    type: 'info',
-                    message: '已取消操作'
-                });
+            closeTransactCard() {
+                this.transactCardDialog = false;
+                this.$refs.ruleForm.resetFields();
+            },
+            closeCardHistory() {
+                this.cardHistoryDialog = false;
+                this.cardHistoryTable = [];
             }
-
         }
     }
 </script>
@@ -300,7 +417,7 @@
         margin-top: 10px;
     }
 
-    .transactForm{
+    .transactForm {
         width: 20vw;
         margin: 0 auto;
     }
