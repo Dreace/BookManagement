@@ -115,7 +115,7 @@
                    :visible.sync="cardHistoryDialog"
                    width="70%"
                    @close="closeCardHistory">
-            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow">
+            <el-table :data="cardHistoryTable" @expand-change="bookHistoryShow">
                 <el-table-column
                         label="单号"
                         width="180"
@@ -141,15 +141,11 @@
                         prop="count">
                 </el-table-column>
                 <el-table-column type="expand">
-                    <template slot-scope="scope">
-                        <el-table :data="scope.row.books">
+                    <template>
+                        <el-table :data="bookHistoryTable">
                             <el-table-column
                                     label="书籍编号"
                                     prop="bookID">
-                            </el-table-column>
-                            <el-table-column
-                                    label="ISBN"
-                                    prop="ISBN">
                             </el-table-column>
                             <el-table-column
                                     label="书名"
@@ -164,8 +160,12 @@
                                     prop="press">
                             </el-table-column>
                             <el-table-column
-                                    label="价格"
-                                    prop="price">
+                                    label="是否已还"
+                                    prop="isRepaid">
+                            </el-table-column>
+                            <el-table-column
+                                    label="归还日期"
+                                    prop="returnTime">
                             </el-table-column>
                         </el-table>
                     </template>
@@ -244,7 +244,7 @@
                     }
                 }).then(res => {
                     let bookMap = {};
-                    let bookHistoryTable=[];
+                    let cardHistoryTable = [];
                     for (let item of res.data) {
                         if (!bookMap[item.slipID]) {
                             bookMap[item.slipID] = []
@@ -252,31 +252,22 @@
                         bookMap[item.slipID].push(item)
                     }
                     for (let slip_id in bookMap) {
-                        bookHistoryTable.push({
+                        cardHistoryTable.push({
                             slipID: slip_id,
                             count: bookMap[slip_id].length,
-                            borrowingTime: res.data[0].borrowingTime,
+                            borrowingTime: bookMap[slip_id][0].borrowingTime,
                             dueTime: bookMap[slip_id][0].dueTime,
                             books: bookMap[slip_id],
                         })
                     }
-                    this.bookHistoryTable = bookHistoryTable;
-                    // let bookMap = new Map();
-                    // let bookHistoryTable = [];
-                    // let newBookID = [];
-                    // for (let item of res.data) {
-                    //     newBookID.push(item.slipID);
-                    //     bookMap[item.slipID] = newBookID;
-                    // }
-                    // for(let slip_id in bookMap){
-                    //     bookHistoryTable.push({
-                    //         slipID: slip_id,
-                    //     })
-                    // }
+                    this.cardHistoryTable = cardHistoryTable;
+                    window.console.log("单列表");
+                    window.console.log(this.cardHistoryTable)
                 });
             },
             bookHistoryShow(row) {
-                window.console.log(row.books);
+                let bookHistoryTable = [];
+                let bookList = [];
                 for (let book of row.books) {
                     this.$api({
                         method: "GET",
@@ -286,9 +277,25 @@
                             type: "book_id"
                         }
                     }).then(res => {
-                        window.console.log(res.data)
+                        bookHistoryTable.push(res.data)
                     });
                 }
+                this.bookHistoryTable=bookHistoryTable;
+                window.console.log("书列表1");
+                window.console.log(this.bookHistoryTable);
+                for (let book in bookHistoryTable) {
+                    bookList.push({
+                        bookID: bookHistoryTable[book].bookID,
+                        name: bookHistoryTable[book].name,
+                        author: bookHistoryTable[book].author,
+                        press: bookHistoryTable[book].press,
+                        isRepaid: bookHistoryTable[book].isRepaid,
+                        returnTime: bookHistoryTable[book].returnTime,
+                    })
+                }
+                this.bookHistoryTable = bookList;
+                window.console.log("书列表2");
+                window.console.log(this.bookHistoryTable)
             },
             cardDelete(row) {
                 this.$confirm('将注销卡号 ' + row.cardID + ', 是否继续?', '确认注销', {
