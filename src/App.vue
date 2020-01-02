@@ -14,10 +14,11 @@
                     </el-col>
                     <el-col :span="10">
                         <el-menu mode="horizontal" router v-if="$store.state.userInfo.isLogin">
+                            <el-menu-item index="/navMenu">
+                                书籍管理
+                            </el-menu-item>
                             <el-menu-item index="/cardManagement">
-                                <!--                                <router-link to="/cardManagement">-->
                                 借书卡管理
-                                <!--                                </router-link>-->
                             </el-menu-item>
                         </el-menu>
 
@@ -40,7 +41,9 @@
                 </el-row>
             </el-header>
             <el-main>
-                <router-view/>
+                <keep-alive>
+                    <router-view/>
+                </keep-alive>
             </el-main>
         </el-container>
     </div>
@@ -76,6 +79,7 @@
     #app {
         font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     }
+
     .app {
         font-size: 1.5em;
     }
@@ -97,12 +101,14 @@
         display: flex;
         align-items: center;
     }
+
     .row-bg {
         /*padding: 10px 0;*/
         /*background-color: #f9fafc;*/
         border-bottom: solid 1px #e6e6e6;
         height: 61px;
     }
+
     .icon {
         width: 1em;
         height: 1em;

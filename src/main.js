@@ -20,7 +20,7 @@ let router = new VueRouter({
     routes: [
         {path: '/login', component: Login},
         {path: '/cardManagement', component: CardManagement},
-        {path:'/navMenu',component: NavMenu}
+        {path: '/navMenu', component: NavMenu}
 
     ]
 });

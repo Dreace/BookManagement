@@ -388,13 +388,13 @@
 
 <style>
     .el-table__body-wrapper::-webkit-scrollbar{
-        width: 0;
-        /*width: 3px;*/
+        /*width: 0;*/
+        width: 3px;
     }
     .el-table__body-wrapper::-webkit-scrollbar-thumb{
         border-radius: 2px;
         height: 50px;
-        background: #eee;
+        background: #aeaeae;
     }
     .el-table__body-wrapper::-webkit-scrollbar-track{
         box-shadow: inset 0 0 5px white;

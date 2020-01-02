@@ -1,6 +1,9 @@
 name: Deploy To Server
 
-on: [push]
+on:
+  push:
+    branches:
+      - build
 
 jobs:
   build:
