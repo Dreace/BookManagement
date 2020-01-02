@@ -14,10 +14,11 @@
                     </el-col>
                     <el-col :span="10">
                         <el-menu mode="horizontal" router v-if="$store.state.userInfo.isLogin">
+                            <el-menu-item index="/navMenu">
+                                书籍管理
+                            </el-menu-item>
                             <el-menu-item index="/cardManagement">
-                                <!--                                <router-link to="/cardManagement">-->
                                 借书卡管理
-                                <!--                                </router-link>-->
                             </el-menu-item>
                         </el-menu>
 
@@ -38,10 +39,11 @@
                         </div>
                     </el-col>
                 </el-row>
-
             </el-header>
             <el-main>
-                <router-view/>
+                <keep-alive>
+                    <router-view/>
+                </keep-alive>
             </el-main>
         </el-container>
     </div>
@@ -68,6 +70,7 @@
 </script>
 
 <style>
+
     a {
         text-decoration: none;
         color: black;

@@ -9,6 +9,7 @@ import "./assets/icon/iconfont"
 import api from "./utils/api"
 import Login from './components/Login'
 import CardManagement from "./components/CardManagement";
+import NavMenu from './components/bookManagement'
 
 Vue.use(ElementUI);
 Vue.use(VueRouter);
@@ -18,7 +19,9 @@ let router = new VueRouter({
     mode: 'history',
     routes: [
         {path: '/login', component: Login},
-        {path: '/cardManagement', component: CardManagement}
+        {path: '/cardManagement', component: CardManagement},
+        {path: '/navMenu', component: NavMenu}
+
     ]
 });
 
