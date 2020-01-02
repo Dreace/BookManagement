@@ -1,38 +1,43 @@
 <template>
     <div id="app">
-        <el-container>
-            <el-header>
-                <el-row type="flex" class="row-bg" justify="space-around">
-                    <el-col :span="6" class="app">
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-book"/>
-                        </svg>
-                        <label class="app-name hidden-sm-and-down">简单图书</label>
-                    </el-col>
-                    <el-col :span="6">
-                        <div class="grid-content bg-purple-light"></div>
-                    </el-col>
-                    <el-col :span="6">
-                        <div class="grid-content bg-purple">
-                            <router-link to="/login">
-                                <el-link>登录</el-link>
-                            </router-link>
-                        </div>
-                    </el-col>
-                </el-row>
+<!--        <el-container>-->
+<!--            <el-header>-->
+<!--                <el-row type="flex" class="row-bg" justify="space-around">-->
+<!--                    <el-col :span="6" class="app">-->
+<!--                        <svg class="icon" aria-hidden="true">-->
+<!--                            <use xlink:href="#icon-book"/>-->
+<!--                        </svg>-->
+<!--                        <label class="app-name hidden-sm-and-down">简单图书</label>-->
+<!--                    </el-col>-->
+<!--                    <el-col :span="6">-->
+<!--                        <div class="grid-content bg-purple-light"></div>-->
+<!--                    </el-col>-->
+<!--                    <el-col :span="6">-->
+<!--                        <div class="grid-content bg-purple">-->
+<!--                            <router-link to="/login">-->
+<!--                                <el-link>登录</el-link>-->
+<!--                            </router-link>-->
+<!--                        </div>-->
+<!--                    </el-col>-->
+<!--                </el-row>-->
 
-            </el-header>
-            <el-main>
-                <router-view/>
-            </el-main>
-        </el-container>
+<!--            </el-header>-->
+<!--            <el-main>-->
+<!--                <router-view/>-->
+<!--            </el-main>-->
+<!--        </el-container>-->
+        <search-book></search-book>
+        <borrow-book></borrow-book>
     </div>
 </template>
 
 <script>
 
+    import SearchBook from "./components/SearchBook";
+    import BorrowBook from "./components/BorrowBook";
     export default {
-        name: 'app'
+        name: 'app',
+        components: {BorrowBook,SearchBook}
     }
 </script>
 
