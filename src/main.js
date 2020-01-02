@@ -7,6 +7,7 @@ import 'element-ui/lib/theme-chalk/display.css';
 import "./assets/icon/iconfont"
 import api from "./utils/api"
 import Login from './components/login'
+import NavMenu from './components/bookManagement'
 
 Vue.use(ElementUI);
 Vue.use(VueRouter);
@@ -15,7 +16,9 @@ Vue.config.productionTip = false;
 let router = new VueRouter({
     mode: 'history',
     routes: [
-        {path: '/login', component: Login}
+        {path: '/login', component: Login},
+        {path:'/navMenu',component: NavMenu}
+
     ]
 });
 

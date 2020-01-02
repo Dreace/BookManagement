@@ -19,7 +19,6 @@
 </template>
 
 <script>
-    import {Message} from "element-ui"
 
     export default {
         name: "login",
@@ -50,15 +49,12 @@
                         name: this.form.userName,
                         password: this.form.password
                     }
-                }).then(res => {
-                    Message({
-                        message: res.message,
-                        type: 'success',
-                        duration: 5 * 1000
-                    });
+                }).then(() => {
+                    this.$router.push("/navMenu")
                 })
             }
         }
+
     }
 </script>
 

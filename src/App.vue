@@ -20,7 +20,6 @@
                         </div>
                     </el-col>
                 </el-row>
-
             </el-header>
             <el-main>
                 <router-view/>
@@ -33,6 +32,7 @@
 
     export default {
         name: 'app'
+
     }
 </script>
 
@@ -40,33 +40,26 @@
     #app {
         font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     }
-
     .app {
         font-size: 1.5em;
     }
-
     .app-name {
         margin-left: 20px;
     }
-
     .bg-purple {
         background: #d3dce6;
     }
-
     .bg-purple-light {
         background: #e5e9f2;
     }
-
     .grid-content {
         border-radius: 4px;
         min-height: 36px;
     }
-
     .row-bg {
         padding: 10px 0;
         background-color: #f9fafc;
     }
-
     .icon {
         width: 1em;
         height: 1em;
