@@ -57,45 +57,43 @@
                     </el-table>
                 </el-col>
             </el-row>
-            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="35%" >
-                <div class="return-book">
-                    <div>
-                        <el-autocomplete
-                                v-model="state"
-                                :fetch-suggestions="querySearchAsync"
-                                placeholder="请输入书籍编号"
-                                value-key="bookID"
-                                @select="handleSelect">
-                            <le-template slot="prepend">书籍编号</le-template>
-                            <!--                        <el-button slot="append" icon="el-icon-search"/>-->
-                        </el-autocomplete>
-                    </div>
-                    <div>
-                        <el-form :model="returnForm" label-position="left" class="demo-table-expand">
+            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="35%">
+                <div class="return-book-style">
+                    <el-autocomplete
+                            v-model="state"
+                            :fetch-suggestions="querySearchAsync"
+                            placeholder="请输入书籍编号"
+                            value-key="bookID"
+                            @select="handleSelect">
+                        <le-template slot="prepend">书籍编号</le-template>
+                        <!--                        <el-button slot="append" icon="el-icon-search"/>-->
+                    </el-autocomplete>
+                    <div class="return-book-form">
+                        <el-form :model="returnBookForm"
+                                 ref="returnForm"
+                                 label-position="left" class="demo-table-expand">
                             <el-form-item label="图书名称">
-                                <span>{{ returnForm.name }}</span>
+                                <span>{{ returnBookForm.name }}</span>
                             </el-form-item>
                             <el-form-item label="ISBN">
-                                <span>{{ returnForm.ISBN }}</span>
+                                <span>{{ returnBookForm.ISBN }}</span>
                             </el-form-item>
                             <el-form-item label="作者">
-                                <span>{{ returnForm.author }}</span>
+                                <span>{{ returnBookForm.author }}</span>
                             </el-form-item>
                             <el-form-item label="是否已借">
-                                <span>{{ returnForm.isBorrowed }}</span>
+                                <span>{{ returnBookForm.isBorrowed }}</span>
                             </el-form-item>
                         </el-form>
                     </div>
                 </div>
-
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogReturnBookVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="dialogReturnBookVisible = false">确 定</el-button>
+                    <el-button @click="cancelReturnBook">取 消</el-button>
+                    <el-button type="primary" @click="confirmReturnBook('returnForm')" :loading="isLoadingReturn">确 定
+                    </el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="增加书籍"
-                       :visible.sync="dialogAddBookVisible"
-                       width="35%">
+            <el-dialog title="增加书籍" :visible.sync="dialogAddBookVisible" width="35%">
                 <el-form :model="addBookForm" :rules="addRules" ref="addForm"
                          label-width="100px" class="demo-ruleForm">
                     <el-form-item label="书籍名称" prop="name">
@@ -177,6 +175,55 @@
                     }
                 }).then(res => vm.bookTable = res.data);
             },
+            //归还书籍确认
+            confirmReturnBook(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.isLoadingAdd = true;
+                        this.$confirm('将归还ID为：' + this.returnBookForm.bookID + '的图书', '确认归还', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            this.$api({
+                                method: "POST",
+                                url: "/Return",
+                                data: {
+                                    bookID: this.returnBookForm.bookID
+                                }
+                            }).then(() => {
+                                this.$message({
+                                    type: 'success',
+                                    message: '归还成功'
+                                });
+                                this.dialogReturnBookVisible = false;
+                                this.returnBookForm = '';
+                                this.state = '';
+                            }).catch((error) => {
+                                window.console.log(error)
+                            }).finally(() => this.isLoadingReturn = false)
+                        }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '已取消操作'
+                            });
+                            this.isLoadingReturn = false;
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+
+            },
+            cancelReturnBook() {
+                this.returnBookForm = '';
+                this.state = '';
+                this.dialogReturnBookVisible = false;
+                this.$message({
+                    type: 'info',
+                    message: '已取消操作'
+                });
+            },
             //增加书籍确认
             confirmAddBook(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -213,7 +260,6 @@
                                 type: 'info',
                                 message: '已取消操作'
                             });
-                            this.$refs[formName].resetFields();
                             this.isLoadingAdd = false;
                         });
                     } else {
@@ -224,7 +270,7 @@
             },
             cancelAddBook() {
                 this.dialogAddBookVisible = false
-                this.$refs.ruleForm.resetFields();
+                this.$refs.addForm.resetFields();
                 this.$message({
                     type: 'info',
                     message: '已取消操作'
@@ -324,8 +370,9 @@
                         keywords: this.state,
                         type: 'book_id'
                     }
-                }).then(res => vm.returnForm = res.data[0]);
+                }).then(res => vm.returnBookForm = res.data[0]);
             },
+
 
             //校验规则
             submitForm(formName) {
@@ -360,19 +407,14 @@
                 timeout: null,
                 searchType: "book_id",
 
+
                 isLoadingAdd: false,
+                isLoadingReturn: false,
                 isLoadingEdit: false,
                 dialogAddBookVisible: false,
                 dialogReturnBookVisible: false,
                 dialogModifyBookVisible: false,
 
-                returnForm: {
-                    bookID: '',
-                    name: '',
-                    ISBN: '',
-                    author: '',
-                    isBorrowed: ''
-                },
 
                 formLabelWidth: '120px',
 
@@ -383,6 +425,14 @@
                     author: '',
                     press: '',
                     price: '',
+                },
+
+                returnBookForm: {
+                    bookID: '',
+                    name: '',
+                    ISBN: '',
+                    author: '',
+                    isBorrowed: ''
                 },
 
                 addBookForm: {
@@ -444,7 +494,7 @@
             };
         },
         watch: {
-            bookForm: function (book) {
+            returnBookForm: function (book) {
                 window.console.log(book)
             }
         },
@@ -459,6 +509,7 @@
 <style>
     .demo-table-expand {
         font-size: 0;
+        width: 800px;
     }
 
     .demo-table-expand label {
@@ -483,8 +534,13 @@
 
     }
 
-    .return-book{
+    .return-book-style {
+
         margin: 0 auto;
+    }
+
+    .return-book-form {
+        margin-top: 30px;
     }
 
 </style>
