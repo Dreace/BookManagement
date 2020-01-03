@@ -57,7 +57,7 @@
                     </el-table>
                 </el-col>
             </el-row>
-            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="35%">
+            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="35%" @close="closeReturnDialog">
                 <div class="return-book-style">
                     <el-autocomplete
                             v-model="state"
@@ -93,7 +93,7 @@
                     </el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="增加书籍" :visible.sync="dialogAddBookVisible" width="35%">
+            <el-dialog title="增加书籍" :visible.sync="dialogAddBookVisible" width="35%" @close="closeAddDialog">
                 <el-form :model="addBookForm" :rules="addRules" ref="addForm"
                          label-width="100px" class="demo-ruleForm">
                     <el-form-item label="书籍名称" prop="name">
@@ -224,6 +224,11 @@
                     message: '已取消操作'
                 });
             },
+            closeReturnDialog(){
+                this.dialogReturnBookVisible = false;
+                this.returnBookForm = '';
+                this.state = '';
+            },
             //增加书籍确认
             confirmAddBook(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -275,6 +280,10 @@
                     type: 'info',
                     message: '已取消操作'
                 });
+            },
+            closeAddDialog(){
+                this.dialogAddBookVisible = false
+                this.$refs.addForm.resetFields();
             },
             //修改书籍信息
             bookEdit(row) {
