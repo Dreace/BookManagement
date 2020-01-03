@@ -141,16 +141,68 @@
                     <el-button type="primary" @click="bookEdit()" :loading="isLoadingEdit">确 定</el-button>
                 </div>
             </el-dialog>
+<!--            <el-dialog title="借阅书籍"-->
+<!--                    :visible.sync="dialogBorrowBookVisible"-->
+<!--                    width="35%"-->
+<!--                    :before-close="handleClose">-->
+<!--                <div class="borrow">-->
+<!--                    <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"-->
+<!--                             class="demo-dynamic">-->
+<!--                        <el-form-item-->
+<!--                                prop="cardID"-->
+<!--                                label="借书卡"-->
+<!--                                :rules="[-->
+<!--      { required: true, message: '请输入借书卡号', trigger: 'blur' },-->
+<!--    ]"-->
+<!--                        >-->
+<!--                            <el-col :span="8">-->
+<!--                                <el-input v-model="dynamicValidateForm.cardID"></el-input>-->
+<!--                            </el-col>-->
+<!--                        </el-form-item>-->
+<!--                        <el-form-item-->
+<!--                                v-for="(book, index) in dynamicValidateForm.books"-->
+<!--                                :label="'图书' + index"-->
+<!--                                :key="book.key"-->
+<!--                                :prop="'books.' + index + '.value'"-->
+<!--                                :rules="{-->
+<!--      required: true, message: '图书号不能为空'-->
+<!--    }"-->
+<!--                        ><el-autocomplete-->
+<!--                                    v-model="book.value"-->
+<!--                                    :fetch-suggestions="querySearchAsync1"-->
+<!--                                    placeholder="请输入内容"-->
+<!--                                    @select="handleSelect"-->
+<!--                            ></el-autocomplete>-->
+<!--                            <el-button @click.prevent="removeBook(book)">删除</el-button>-->
+<!--                        </el-form-item>-->
+<!--                        <el-form-item>-->
+<!--                            <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>-->
+<!--                            <el-button @click="addBook">新增图书</el-button>-->
+<!--                            <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>-->
+<!--                        </el-form-item>-->
+<!--                    </el-form>-->
+<!--                </div>-->
+<!--            </el-dialog>-->
+            <borrow-book v-if="dialogBorrowBookVisible"></borrow-book>
         </div>
     </div>
 </template>
 <script>
     export default {
         methods: {
-            handleOpen(key, keyPath) {
-                // eslint-disable-next-line no-console
-                console.log(key, keyPath);
+            removeBook(item) {
+                var index = this.dynamicValidateForm.books.indexOf(item)
+                if (index !== -1) {
+                    this.dynamicValidateForm.books.splice(index, 1)
+                }
             },
+            addBook() {
+                this.dynamicValidateForm.books.push({
+                    value: '',
+                    key: Date.now()
+                });
+            },
+
             handleClose(done) {
                 this.$confirm('确认关闭？')
                     .then(() => {
@@ -172,6 +224,7 @@
                     }
                 }).then(res => vm.bookTable = res.data);
             },
+
             //增加书籍确认
             confirmAddBook(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -344,7 +397,6 @@
 
         data() {
             return {
-
                 bookTable: [],
                 state: '',
                 timeout: null,
@@ -355,6 +407,7 @@
                 dialogAddBookVisible: false,
                 dialogReturnBookVisible: false,
                 dialogModifyBookVisible: false,
+                dialogBorrowBookVisible: false,
 
                 form: {
                     bookID: '',

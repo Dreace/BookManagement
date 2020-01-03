@@ -3,7 +3,6 @@
         <el-container>
             <el-header>
                 <el-row type="flex" class="row-bg" justify="space-around">
-
                     <el-col :span="3" class="app">
                         <router-link to="/">
                             <svg class="icon" aria-hidden="true">
@@ -45,16 +44,19 @@
                     <router-view/>
                 </keep-alive>
             </el-main>
+            <borrow-book></borrow-book>
         </el-container>
     </div>
 </template>
 
 <script>
 
-    import SearchBook from "./components/SearchBook";
+    // import SearchBook from "./components/SearchBook";
+
     import BorrowBook from "./components/BorrowBook";
     export default {
         name: 'app',
+        components: {BorrowBook},
         data() {
             return {
                 menuIndex: 0
