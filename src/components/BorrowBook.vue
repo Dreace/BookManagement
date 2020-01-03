@@ -7,16 +7,18 @@
                 :before-close="handleClose">
             <h1 align="center">图书借阅</h1>
             <div class="borrow">
-                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
+                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
+                         class="demo-dynamic">
                     <el-form-item
                             prop="cardID"
                             label="借书卡"
                             :rules="[
       { required: true, message: '请输入借书卡号', trigger: 'blur' },
     ]"
-                    ><el-col :span="8">
-                        <el-input v-model="dynamicValidateForm.cardID"></el-input>
-                    </el-col>
+                    >
+                        <el-col :span="8">
+                            <el-input v-model="dynamicValidateForm.cardID"></el-input>
+                        </el-col>
 
                     </el-form-item>
                     <el-form-item
@@ -27,12 +29,13 @@
                             :rules="{
       required: true, message: '图书号不能为空'
     }"
-                    ><el-autocomplete
-                            v-model="book.value"
-                            :fetch-suggestions="querySearchAsync"
-                            placeholder="请输入内容"
-                            @select="handleSelect"
-                    ></el-autocomplete>
+                    >
+                        <el-autocomplete
+                                v-model="book.value"
+                                :fetch-suggestions="querySearchAsync"
+                                placeholder="请输入内容"
+                                @select="handleSelect"
+                        ></el-autocomplete>
                         <el-button @click.prevent="removeBook(book)">删除</el-button>
                     </el-form-item>
 
@@ -58,7 +61,7 @@
                         value: ''
                     }],
                     temp: [],
-                    timeout:  null,
+                    timeout: null,
                 },
                 dialogVisible: false
             };
@@ -92,21 +95,21 @@
 
             loadAll() {
                 return [
-                    { "value": "1233245" },
-                    { "value": "2323545" },
-                    { "value": "y98234890" },
-                    { "value": "t9453453523" },
-                    { "value": "3878232" },
-                    { "value": "33465465t" },
-                    { "value": "a35243626" },
-                    { "value": "46457t" },
-                    { "value": "4859245u" },
-                    { "value": "749052304u584" },
-                    { "value": "03r98348r8q" },
-                    { "value": "378129358123" },
-                    { "value": "6853497589" },
-                    { "value": "48632985" },
-                    { "value": "236459878" },
+                    {"value": "1233245"},
+                    {"value": "2323545"},
+                    {"value": "y98234890"},
+                    {"value": "t9453453523"},
+                    {"value": "3878232"},
+                    {"value": "33465465t"},
+                    {"value": "a35243626"},
+                    {"value": "46457t"},
+                    {"value": "4859245u"},
+                    {"value": "749052304u584"},
+                    {"value": "03r98348r8q"},
+                    {"value": "378129358123"},
+                    {"value": "6853497589"},
+                    {"value": "48632985"},
+                    {"value": "236459878"},
                 ];
             },
             querySearchAsync(queryString, cb) {
@@ -134,8 +137,6 @@
         }
     }
 </script>
-
-
 
 
 <style>
