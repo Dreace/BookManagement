@@ -389,7 +389,7 @@
 <style>
     .el-table__body-wrapper::-webkit-scrollbar{
         /*width: 0;*/
-        width: 3px;
+        width: 7px;
     }
     .el-table__body-wrapper::-webkit-scrollbar-thumb{
         border-radius: 2px;

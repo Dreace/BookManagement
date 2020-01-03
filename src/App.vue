@@ -14,7 +14,7 @@
                     </el-col>
                     <el-col :span="10">
                         <el-menu mode="horizontal" router v-if="$store.state.userInfo.isLogin">
-                            <el-menu-item index="/navMenu">
+                            <el-menu-item index="/bookManagement">
                                 书籍管理
                             </el-menu-item>
                             <el-menu-item index="/cardManagement">
