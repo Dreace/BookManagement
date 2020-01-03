@@ -91,9 +91,6 @@
                        width="35%">
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm"
                          label-width="100px" class="demo-ruleForm">
-                    <el-form-item label="书籍编号" prop="bookID">
-                        <el-input v-model="ruleForm.bookID"/>
-                    </el-form-item>
                     <el-form-item label="书籍名称" prop="name">
                         <el-input v-model="ruleForm.name"/>
                     </el-form-item>
@@ -186,7 +183,6 @@
                                 method: "POST",
                                 url: "/AddBook",
                                 data: {
-                                    bookID: this.ruleForm.bookID,
                                     name: this.ruleForm.name,
                                     ISBN: this.ruleForm.ISBN,
                                     author: this.ruleForm.author,
@@ -198,6 +194,7 @@
                                     type: 'success',
                                     message: '添加成功'
                                 });
+                                this.$('#ruleForm').reset()
                                 this.searchBook('','book_id')
                                 this.dialogAddBookVisible = false;
                             }).catch((error) => {
@@ -227,6 +224,7 @@
             bookEdit(row) {
                 this.dialogModifyBookVisible = true
                 this.ruleForm = Object.assign({}, row)
+                this.$('#ruleForm').reset()
                 // this.$refs[formName].validate((valid) => {
                 //     if (valid) {
                 //         this.isLoadingEdit = true;
@@ -269,6 +267,7 @@
             },
             cancelBookEdit(){
                 this.dialogModifyBookVisible = false
+                this.$('#ruleForm').reset()
                 this.$message({
                     type: 'info',
                     message: '已取消操作'
