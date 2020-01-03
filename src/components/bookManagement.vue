@@ -41,13 +41,16 @@
                                 prop="price"
                                 label="价格">
                         </el-table-column>
-                        <el-table-column label="操作" width="150">
+                        <el-table-column label="操作" fixed="right" width="150">
                             <template slot-scope="scope">
                                 <el-button
+                                        plain
+                                        type="primary"
                                         size="mini"
                                         @click="bookEdit(scope.row)">编辑
                                 </el-button>
                                 <el-button
+                                        plain
                                         size="mini"
                                         type="danger"
                                         @click="bookDelete(scope.row)">删除
