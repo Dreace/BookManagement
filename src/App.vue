@@ -5,16 +5,23 @@
                 <el-row type="flex" class="row-bg" justify="space-around">
 
                     <el-col :span="3" class="app-name">
-                        <router-link to="/">
+                        <router-link :to="$store.state.userInfo.isLogin?'/bookManagement':'/searchBook'">
                             <img src="./assets/name.png" alt="">
                         </router-link>
                     </el-col>
                     <el-col :span="10">
-                        <el-menu mode="horizontal" router v-if="$store.state.userInfo.isLogin">
-                            <el-menu-item index="/bookManagement">
+
+                        <el-menu mode="horizontal" router :default-active="$store.state.menuIndex">
+                            <el-menu-item index="/searchBook" v-show="!$store.state.userInfo.isLogin">
+                                <i class="el-icon-search"/>搜索图书
+                            </el-menu-item>
+                            <el-menu-item index="/bookManagement" v-show="$store.state.userInfo.isLogin">
                                 书籍管理
                             </el-menu-item>
-                            <el-menu-item index="/cardManagement">
+                            <el-menu-item index="/borrowAndReturn" v-show="$store.state.userInfo.isLogin">
+                                借书/还书
+                            </el-menu-item>
+                            <el-menu-item index="/cardManagement" v-show="$store.state.userInfo.isLogin">
                                 借书卡管理
                             </el-menu-item>
                         </el-menu>

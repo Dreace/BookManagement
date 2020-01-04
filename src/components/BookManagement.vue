@@ -3,9 +3,11 @@
         <div class="book-container">
             <el-row>
                 <el-col :span="8">
-                    <el-button type="primary" @click="dialogAddBookVisible = true">增添书籍</el-button>
-                    <el-button type="warning" @click="dialogBorrowBookVisible = true">借阅书籍</el-button>
-                    <el-button type="success" @click="dialogReturnBookVisible = true">归还书籍</el-button>
+                    <div v-show="$store.state.userInfo.isLogin">
+                        <el-button type="primary" @click="dialogAddBookVisible = true" v-if="$route.path==='/bookManagement'">增添书籍</el-button>
+                        <el-button type="warning" @click="dialogBorrowBookVisible = true" v-if="$route.path==='/borrowAndReturn'">借阅书籍</el-button>
+                        <el-button type="success" @click="dialogReturnBookVisible = true" v-show="$route.path==='/borrowAndReturn'">归还书籍</el-button>
+                    </div>
                 </el-col>
                 <el-col :span="8">
                     <div class="grid-content"></div>
@@ -64,7 +66,7 @@
                         <span>{{scope.row.isBorrowed?"已借出":"在馆"}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="200">
+                <el-table-column label="操作" fixed="right" width="200" v-if="$store.state.userInfo.isLogin && $route.path==='/bookManagement'">
                     <template slot-scope="scope">
                         <el-button
                                 plain
@@ -209,9 +211,9 @@
                         </el-button>
                     </el-form-item>
 
-<!--                    <el-form-item>-->
-<!--                        -->
-<!--                    </el-form-item>-->
+                    <!--                    <el-form-item>-->
+                    <!--                        -->
+                    <!--                    </el-form-item>-->
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="resetBorrowBook('dynamicValidateForm')">重置</el-button>
@@ -610,9 +612,6 @@
             },
             searchBookType(newSearchType) {
                 this.searchBook(this.inputBookValue, newSearchType)
-            },
-            bookTable: function (book) {
-                window.console.log(book)
             }
         },
         mounted() {
@@ -628,6 +627,7 @@
         margin-bottom: 0;
         /*margin-left: 20px;*/
     }
+
     .return-book-input {
         width: 400px;
     }

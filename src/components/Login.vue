@@ -61,7 +61,9 @@
                                 isLogin: true,
                                 name: res.data.name,
                                 permission: res.data.permission
-                            })
+                            });
+                            this.$store.commit("changeMenuIndex", "/bookManagement")
+                            this.$router.push("/bookManagement")
                         }).catch((error) => {
                             window.console.log(error)
                         })
