@@ -68,6 +68,10 @@
 </script>
 
 <style>
+    .el-dialog__footer {
+        width: fit-content;
+        margin: 0 auto;
+    }
 
     a {
         text-decoration: none;

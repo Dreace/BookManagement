@@ -86,16 +86,17 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="500px" @close="closeReturnDialog">
+            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="500px"
+                       @close="closeReturnDialog('returnForm')">
                 <div class="return-book">
-                    <el-autocomplete
-                            v-model="state"
-                            :fetch-suggestions="queryReturnSearchAsync"
-                            placeholder="请输入书籍编号"
-                            value-key="bookID"
-                            @select="handleReturnSelect"
-                            clearable>
-                        <le-template slot="prepend">书籍编号</le-template>
+                    <el-autocomplete class="return-book-input"
+                                     v-model="state"
+                                     :fetch-suggestions="queryReturnSearchAsync"
+                                     placeholder="请输入书籍编号"
+                                     value-key="bookID"
+                                     @select="handleReturnSelect"
+                                     clearable>
+                        <template slot="prepend">书籍编号</template>
                     </el-autocomplete>
                     <div class="return-book-form">
                         <el-form :model="returnBookForm"
@@ -113,11 +114,21 @@
                             <el-form-item label="出版社" class="return-book-item">
                                 <span>{{ returnBookForm.press }}</span>
                             </el-form-item>
+                            <el-form-item label="出借时间" class="return-book-item">
+                                <span v-if="returnBookForm.borrowingTime">{{new Date(returnBookForm.borrowingTime*1000).toLocaleString() }}</span>
+                            </el-form-item>
+                            <el-form-item label="应还期限" class="return-book-item">
+                                <span v-if="returnBookForm.dueTime">
+                                    {{(new Date(returnBookForm.dueTime*1000).toLocaleString()) +(
+                                    (Date.now() > returnBookForm.dueTime*1000)?"（已逾期"+
+                                    Math.ceil((returnBookForm.dueTime - Date.now()/1000)/86400)+"天）":"")}}
+                                </span>
+                            </el-form-item>
                         </el-form>
                     </div>
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="cancelReturnBook">取 消</el-button>
+                    <el-button @click="closeReturnDialog('returnForm')">取 消</el-button>
                     <el-button type="primary" @click="confirmReturnBook('returnForm')" :loading="isLoadingReturn">确 定
                     </el-button>
                 </div>
@@ -198,13 +209,15 @@
                         </el-button>
                     </el-form-item>
 
-                    <el-form-item>
-                        <el-button type="primary" @click="confirmBorrowBook('dynamicValidateForm')">提交</el-button>
-                        <el-button @click="addBook">新增图书</el-button>
-                        <el-button @click="resetBorrowBook('dynamicValidateForm')">重置</el-button>
-                    </el-form-item>
+<!--                    <el-form-item>-->
+<!--                        -->
+<!--                    </el-form-item>-->
                 </el-form>
-
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="resetBorrowBook('dynamicValidateForm')">重置</el-button>
+                    <el-button @click="addBook">新增图书</el-button>
+                    <el-button type="primary" @click="confirmBorrowBook('dynamicValidateForm')">提交</el-button>
+                </div>
             </el-dialog>
         </div>
     </div>
@@ -247,7 +260,7 @@
                                     message: '归还成功'
                                 });
                                 this.dialogReturnBookVisible = false;
-                                this.returnBookForm = '';
+                                this.$refs[formName].resetFields();
                                 this.state = '';
                             }).catch((error) => {
                                 window.console.log(error)
@@ -261,14 +274,9 @@
                 });
 
             },
-            cancelReturnBook() {
-                this.returnBookForm = '';
-                this.state = '';
+            closeReturnDialog(formName) {
                 this.dialogReturnBookVisible = false;
-            },
-            closeReturnDialog() {
-                this.dialogReturnBookVisible = false;
-                this.returnBookForm = '';
+                this.$refs[formName].resetFields();
                 this.state = '';
             },
 
@@ -406,12 +414,11 @@
                 let vm = this;
                 this.$api({
                     method: "GET",
-                    url: "GetBookList",
+                    url: "Return/BookDetail",
                     params: {
-                        keywords: this.state,
-                        type: 'book_id'
+                        bookID: this.state,
                     }
-                }).then(res => vm.returnBookForm = res.data[0]);
+                }).then(res => vm.returnBookForm = res.data);
             },
 
             //从服务器获得已借书籍ID
@@ -617,7 +624,14 @@
 </script>
 
 <style>
-    .
+    .return-book-form .el-form-item {
+        margin-bottom: 0;
+        /*margin-left: 20px;*/
+    }
+    .return-book-input {
+        width: 400px;
+    }
+
     .demo-table-expand {
         font-size: 0;
         width: 800px;
@@ -651,7 +665,7 @@
     }
 
     .return-book-form {
-        margin-top: 30px;
+        margin-top: 15px;
     }
 
     .search {
@@ -665,7 +679,7 @@
     }
 
     .borrow-input {
-        width: 250px;
+        width: 260px;
     }
 
     .return-book-item {
