@@ -3,7 +3,7 @@
         <div class="book-container">
             <el-row>
                 <el-col :span="8">
-                    <el-button type="primary" @click="dialogAddBookVisible = true">增加书籍</el-button>
+                    <el-button type="primary" @click="dialogAddBookVisible = true">增添书籍</el-button>
                     <el-button type="warning" @click="dialogBorrowBookVisible = true">借阅书籍</el-button>
                     <el-button type="success" @click="dialogReturnBookVisible = true">归还书籍</el-button>
                 </el-col>
@@ -12,7 +12,7 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="search">
-                        <el-input placeholder="请输入内容" v-model="inputBookValue" class="input-with-select">
+                        <el-input placeholder="请输入内容" v-model="inputBookValue" class="input-with-select" clearable>
                             <el-select v-model="searchBookType" slot="prepend" placeholder="请选择">
                                 <el-option label="书号" value="book_id"/>
                                 <el-option label="ISBN" value="ISBN"/>
@@ -25,66 +25,67 @@
                 </el-col>
             </el-row>
 
-            <el-row class="tac">
-                <el-col>
-                    <el-table
-                            :data="bookTable"
-                            class="book-table"
-                            border
-                            height="520">
-                        <el-table-column
-                                width="150"
-                                prop="bookID"
-                                label="ID">
-                        </el-table-column>
-                        <el-table-column
-                                prop="name"
-                                label="书名">
-                        </el-table-column>
-                        <el-table-column
-                                width="150"
-                                prop="ISBN"
-                                label="ISBN">
-                        </el-table-column>
-                        <el-table-column
-                                prop="author"
-                                label="作者">
-                        </el-table-column>
-                        <el-table-column
-                                prop="press"
-                                label="出版社">
-                        </el-table-column>
-                        <el-table-column
-                                width="80"
-                                prop="price"
-                                label="价格">
-                        </el-table-column>
-                        <el-table-column
-                                width="80"
-                                label="是否借出">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.isBorrowed?"已借出":"在馆"}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="操作" fixed="right" width="150">
-                            <template slot-scope="scope">
-                                <el-button
-                                        plain
-                                        type="primary"
-                                        size="mini"
-                                        @click="bookEdit(scope.row)">编辑
-                                </el-button>
-                                <el-button
-                                        plain
-                                        size="mini"
-                                        type="danger"
-                                        @click="bookDelete(scope.row)">删除
-                                </el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </el-col>
-            </el-row>
+            <el-table
+                    :data="bookTable"
+                    class="book-table"
+                    border
+                    height="520">
+                <el-table-column
+                        width="150"
+                        prop="bookID"
+                        label="ID">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        label="书名">
+                </el-table-column>
+                <el-table-column
+                        width="150"
+                        prop="ISBN"
+                        label="ISBN">
+                </el-table-column>
+                <el-table-column
+                        prop="author"
+                        label="作者">
+                </el-table-column>
+                <el-table-column
+                        prop="press"
+                        label="出版社">
+                </el-table-column>
+                <el-table-column
+                        width="80"
+                        prop="price"
+                        label="价格">
+                </el-table-column>
+                <el-table-column
+                        width="80"
+                        label="是否借出">
+                    <template slot-scope="scope">
+                        <span>{{scope.row.isBorrowed?"已借出":"在馆"}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" fixed="right" width="200">
+                    <template slot-scope="scope">
+                        <el-button
+                                plain
+                                type="success"
+                                size="mini"
+                                @click="repeatAddBook(scope.row)">+1
+                        </el-button>
+                        <el-button
+                                plain
+                                type="primary"
+                                size="mini"
+                                @click="bookEdit(scope.row)">编辑
+                        </el-button>
+                        <el-button
+                                size="mini"
+                                type="danger"
+                                @click="bookDelete(scope.row)">删除
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
             <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="500px" @close="closeReturnDialog">
                 <div class="return-book">
                     <el-autocomplete
@@ -101,7 +102,7 @@
                                  ref="returnForm"
                                  label-position="left" class="demo-table-expand">
                             <el-form-item label="图书名称" class="return-book-item">
-                                <span >{{ returnBookForm.name }}</span>
+                                <span>{{ returnBookForm.name }}</span>
                             </el-form-item>
                             <el-form-item label="ISBN" class="return-book-item">
                                 <span>{{ returnBookForm.ISBN }}</span>
@@ -121,7 +122,7 @@
                     </el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="增加书籍" :visible.sync="dialogAddBookVisible" width="35%" @close="closeAddDialog">
+            <el-dialog title="增添书籍" :visible.sync="dialogAddBookVisible" width="35%" @close="closeAddDialog">
                 <el-form :model="addBookForm" :rules="addRules" ref="addForm"
                          label-width="100px" class="demo-ruleForm">
                     <el-form-item label="书籍名称" prop="name">
@@ -252,10 +253,6 @@
                                 window.console.log(error)
                             }).finally(() => this.isLoadingReturn = false)
                         }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '已取消操作'
-                            });
                             this.isLoadingReturn = false;
                         });
                     } else {
@@ -268,10 +265,6 @@
                 this.returnBookForm = '';
                 this.state = '';
                 this.dialogReturnBookVisible = false;
-                this.$message({
-                    type: 'info',
-                    message: '已取消操作'
-                });
             },
             closeReturnDialog() {
                 this.dialogReturnBookVisible = false;
@@ -279,6 +272,15 @@
                 this.state = '';
             },
 
+            repeatAddBook(row) {
+                this.dialogAddBookVisible = true;
+                this.$set(this.addBookForm, "name", row.name);
+                this.$set(this.addBookForm, "ISBN", row.ISBN);
+                this.$set(this.addBookForm, "author", row.author);
+                this.$set(this.addBookForm, "press", row.press);
+                this.$set(this.addBookForm, "price", row.price);
+                // this.addBookForm = Object.assign({},row)
+            },
             //增加书籍确认
             confirmAddBook(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -311,10 +313,6 @@
                                 window.console.log(error)
                             }).finally(() => this.isLoadingAdd = false)
                         }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '已取消操作'
-                            });
                             this.isLoadingAdd = false;
                         });
                     } else {
@@ -326,10 +324,6 @@
             cancelAddBook() {
                 this.dialogAddBookVisible = false;
                 this.$refs.addForm.resetFields();
-                this.$message({
-                    type: 'info',
-                    message: '已取消操作'
-                });
             },
             closeAddDialog() {
                 this.dialogAddBookVisible = false;
@@ -372,10 +366,6 @@
                                 window.console.log(error)
                             }).finally(() => this.isLoadingEdit = false)
                         }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '已取消操作'
-                            });
                             this.isLoadingEdit = false;
                         });
                     } else {
@@ -385,10 +375,6 @@
             },
             cancelBookEdit() {
                 this.dialogModifyBookVisible = false;
-                this.$message({
-                    type: 'info',
-                    message: '已取消操作'
-                });
             },
             //删除书籍信息
             bookDelete(row) {
@@ -413,10 +399,6 @@
                         window.console.log(error)
                     })
                 }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消操作'
-                    });
                 });
             },
             //选择书号触发
@@ -538,7 +520,7 @@
                     name: '',
                     ISBN: '',
                     author: '',
-                    press:'',
+                    press: '',
                     isBorrowed: ''
                 },
 
@@ -580,8 +562,7 @@
                         {min: 0, max: 30, message: '长度在 0 到 30 个字符', trigger: 'blur'}
                     ],
                     price: [
-                        {required: true, message: '请输入价格', trigger: 'blur'},
-                        {min: 0, max: 10, message: '长度在 0 到 10 个字符', trigger: 'blur'}
+                        {min: 0, max: 1000, type: "number", message: '大小在 0 到 1000 '}
                     ],
                 },
 
@@ -683,11 +664,11 @@
         margin-left: 10px;
     }
 
-    .borrow-input{
+    .borrow-input {
         width: 250px;
     }
 
-    .return-book-item{
+    .return-book-item {
         width: 400px;
     }
 </style>

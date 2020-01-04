@@ -12,7 +12,7 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="grid-content">
-                        <el-input v-model="inputValue" placeholder="输入搜索内容">
+                        <el-input v-model="inputValue" placeholder="输入搜索内容" clearable>
                             <el-select v-model="searchType" slot="prepend" placeholder="请选择">
                                 <el-option label="卡号" value="card_id"/>
                                 <el-option label="姓名" value="cardholder"/>
@@ -211,6 +211,8 @@
         watch: {
             inputValue(newInputValue) {
                 if (newInputValue && newInputValue.length > 0) {
+                    this.searchCard(newInputValue, this.searchType)
+                }else{
                     this.searchCard(newInputValue, this.searchType)
                 }
             },
