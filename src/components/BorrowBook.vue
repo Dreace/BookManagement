@@ -1,8 +1,8 @@
 <template>
     <div>
-        <el-button type="text" @click="dialogVisible = true">借书登记</el-button>
+        <el-button type="text" @click="dialogBorrowBookVisible = true">借书登记</el-button>
         <el-dialog
-                :visible.sync="dialogVisible"
+                :visible.sync="dialogBorrowBookVisible"
                 width="30%">
             <h1 align="center">图书借阅</h1>
             <div class="borrow">
@@ -55,7 +55,7 @@
                         value: ''
                     }],
                 },
-                dialogVisible: false
+                dialogBorrowBookVisible: false
             };
         },
         methods: {
@@ -106,8 +106,7 @@
                     value: ''
                 });
             },
-
-            querySearchAsync(queryString, cb) {
+            querySearchAsync1(queryString, cb) {
                 this.$api({
                     method: "GET",
                     url: "Borrow/BookList",
@@ -116,13 +115,10 @@
                     }
                 }).then((res) => cb(res.data));
             },
-            handleSelect(item) {
+            handleSelect1(item) {
                 window.console.log(item);
             },
-
         },
-        mounted() {
-        }
     }
 </script>
 

@@ -5,6 +5,7 @@
                 <el-col :span="8">
                     <el-button type="primary" @click="dialogAddBookVisible = true">增加书籍</el-button>
                     <el-button type="success" @click="dialogReturnBookVisible = true">归还书籍</el-button>
+                    <el-button type="warning" @click="dialogBorrowBookVisible = true">借阅书籍</el-button>
                 </el-col>
             </el-row>
             <el-row class="tac">
@@ -148,76 +149,46 @@
                     </el-button>
                 </div>
             </el-dialog>
-<!--            <el-dialog title="借阅书籍"-->
-<!--                    :visible.sync="dialogBorrowBookVisible"-->
-<!--                    width="35%"-->
-<!--                    :before-close="handleClose">-->
-<!--                <div class="borrow">-->
-<!--                    <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"-->
-<!--                             class="demo-dynamic">-->
-<!--                        <el-form-item-->
-<!--                                prop="cardID"-->
-<!--                                label="借书卡"-->
-<!--                                :rules="[-->
-<!--      { required: true, message: '请输入借书卡号', trigger: 'blur' },-->
-<!--    ]"-->
-<!--                        >-->
-<!--                            <el-col :span="8">-->
-<!--                                <el-input v-model="dynamicValidateForm.cardID"></el-input>-->
-<!--                            </el-col>-->
-<!--                        </el-form-item>-->
-<!--                        <el-form-item-->
-<!--                                v-for="(book, index) in dynamicValidateForm.books"-->
-<!--                                :label="'图书' + index"-->
-<!--                                :key="book.key"-->
-<!--                                :prop="'books.' + index + '.value'"-->
-<!--                                :rules="{-->
-<!--      required: true, message: '图书号不能为空'-->
-<!--    }"-->
-<!--                        ><el-autocomplete-->
-<!--                                    v-model="book.value"-->
-<!--                                    :fetch-suggestions="querySearchAsync1"-->
-<!--                                    placeholder="请输入内容"-->
-<!--                                    @select="handleSelect"-->
-<!--                            ></el-autocomplete>-->
-<!--                            <el-button @click.prevent="removeBook(book)">删除</el-button>-->
-<!--                        </el-form-item>-->
-<!--                        <el-form-item>-->
-<!--                            <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>-->
-<!--                            <el-button @click="addBook">新增图书</el-button>-->
-<!--                            <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>-->
-<!--                        </el-form-item>-->
-<!--                    </el-form>-->
-<!--                </div>-->
-<!--            </el-dialog>-->
-            <borrow-book v-if="dialogBorrowBookVisible"></borrow-book>
+            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="35%">
+                <div class="borrow">
+                    <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
+                             class="demo-dynamic">
+                        <el-form-item prop="cardID" label="借书卡" :rules="[{required: true, message: '请输入借书卡号'},]">
+                            <el-col :span="8">
+                                <el-input v-model="dynamicValidateForm.cardID"></el-input>
+                            </el-col>
+
+                        </el-form-item>
+                        <el-form-item
+                                v-for="(book, index) in dynamicValidateForm.books"
+                                :label="'图书' + index"
+                                :key="book.key"
+                                :prop="'books.' + index + '.value'"
+                                :rules="{required: true, message: '图书号不能为空'}">
+                            <el-autocomplete
+                                    v-model="book.value"
+                                    :fetch-suggestions="querySearchAsync1"
+                                    placeholder="请输入书籍编号"
+                                    value-key="bookID"
+                                    @select="handleSelect1">
+                            </el-autocomplete>
+                            <el-button @click.prevent="removeBook(book)">删除</el-button>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>
+                            <el-button @click="addBook">新增图书</el-button>
+                            <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </el-dialog>
         </div>
     </div>
 </template>
 <script>
     export default {
         methods: {
-            removeBook(item) {
-                var index = this.dynamicValidateForm.books.indexOf(item)
-                if (index !== -1) {
-                    this.dynamicValidateForm.books.splice(index, 1)
-                }
-            },
-            addBook() {
-                this.dynamicValidateForm.books.push({
-                    value: '',
-                    key: Date.now()
-                });
-            },
-
-            handleClose(done) {
-                this.$confirm('确认关闭？')
-                    .then(() => {
-                        done();
-                    })
-                    .catch(() => {
-                    });
-            },
             //从服务器获得书籍
             searchBook(keywords, type) {
                 let vm = this;
@@ -439,20 +410,6 @@
                 }).then(res => vm.returnBookForm = res.data[0]);
             },
 
-
-            //校验规则
-            submitForm(formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        alert('submit!');
-                    } else {
-                        return false;
-                    }
-                });
-            },
-            resetForm(formName) {
-                this.$refs[formName].resetFields();
-            },
             //从服务器获得已借书籍ID
             querySearchAsync(queryString, cb) {
                 this.$api({
@@ -463,6 +420,66 @@
                     }
                 }).then((res) => cb(res.data));
             },
+            //借阅书籍
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let vm = this;
+                        window.console.log(vm.dynamicValidateForm.cardID)
+                        let books = []
+                        for(let item of vm.dynamicValidateForm.books){
+                            books.push(item.value)
+                        }
+                        this.$api({
+                            method: 'post',
+                            url: '/Borrow',
+                            data: {
+                                cardID: vm.dynamicValidateForm.cardID,
+                                bookList: books
+                            }
+                        }).then((res) => {
+                            let message = ''
+                            if (res.code == 0){
+                                message="借阅成功"
+                            }else {
+                                message=res.message
+                            }
+                            vm.$message({
+                                type: 'success',
+                                message: message
+                            })
+                        }).catch((error) => {
+                            window.console.log(error)
+                        })
+                    }
+                });
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            removeBook(item) {
+                var index = this.dynamicValidateForm.books.indexOf(item)
+                if (index !== -1) {
+                    this.dynamicValidateForm.books.splice(index, 1)
+                }
+            },
+            addBook() {
+                this.dynamicValidateForm.books.push({
+                    value: ''
+                });
+            },
+            querySearchAsync1(queryString, cb) {
+                this.$api({
+                    method: "GET",
+                    url: "Borrow/BookList",
+                    params: {
+                        "bookID": queryString
+                    }
+                }).then((res) => cb(res.data));
+            },
+            handleSelect1(item) {
+                window.console.log(item);
+            },
         },
 
         data() {
@@ -471,7 +488,12 @@
                 state: '',
                 timeout: null,
                 searchType: "book_id",
-
+                dynamicValidateForm: {
+                    cardID: '',
+                    books: [{
+                        value: ''
+                    }],
+                },
 
                 isLoadingAdd: false,
                 isLoadingReturn: false,
@@ -480,7 +502,6 @@
                 dialogReturnBookVisible: false,
                 dialogModifyBookVisible: false,
                 dialogBorrowBookVisible: false,
-
 
                 formLabelWidth: '120px',
 
@@ -609,4 +630,9 @@
         margin-top: 30px;
     }
 
+    .borrow {
+        width: 45vw;
+        margin: 0 auto;
+        position: relative;
+    }
 </style>
