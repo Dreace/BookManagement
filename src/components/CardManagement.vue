@@ -232,6 +232,7 @@
             },
             cardHistory(row) {
                 this.cardHistoryDialog = true;
+                this.bookHistoryTable = []
                 this.$api({
                     method: "GET",
                     url: "GetCardBorrowList",

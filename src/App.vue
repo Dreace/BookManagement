@@ -4,12 +4,9 @@
             <el-header>
                 <el-row type="flex" class="row-bg" justify="space-around">
 
-                    <el-col :span="3" class="app">
+                    <el-col :span="3" class="app-name">
                         <router-link to="/">
-                            <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#icon-book"/>
-                            </svg>
-                            <label class="app-name hidden-sm-and-down">简单图书</label>
+                            <img src="./assets/name.png" alt="">
                         </router-link>
                     </el-col>
                     <el-col :span="10">
@@ -29,9 +26,7 @@
                                 <el-button icon="el-icon-user">登录</el-button>
                             </router-link>
                             <el-dropdown v-else @command="handleCommand">
-                                <el-button>
-                                    我的<i class="el-icon-arrow-down el-icon--right"/>
-                                </el-button>
+                                <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
                                 <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item command="logOut">登出</el-dropdown-item>
                                 </el-dropdown-menu>
@@ -71,6 +66,7 @@
 
 <style>
 
+
     a {
         text-decoration: none;
         color: black;
@@ -80,8 +76,13 @@
         font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     }
 
-    .app {
+    .app-name {
         font-size: 1.5em;
+    }
+
+    .app-name img {
+        max-width: 80%;
+        max-height: 100%;
     }
 
     .header-right {
