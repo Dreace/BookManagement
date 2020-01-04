@@ -4,17 +4,34 @@
             <el-row>
                 <el-col :span="8">
                     <el-button type="primary" @click="dialogAddBookVisible = true">增加书籍</el-button>
-                    <el-button type="success" @click="dialogReturnBookVisible = true">归还书籍</el-button>
                     <el-button type="warning" @click="dialogBorrowBookVisible = true">借阅书籍</el-button>
+                    <el-button type="success" @click="dialogReturnBookVisible = true">归还书籍</el-button>
+                </el-col>
+                <el-col :span="8">
+                    <div class="grid-content"></div>
+                </el-col>
+                <el-col :span="8">
+                    <div class="search">
+                        <el-input placeholder="请输入内容" v-model="inputBookValue" class="input-with-select">
+                            <el-select v-model="searchBookType" slot="prepend" placeholder="请选择">
+                                <el-option label="书号" value="book_id"/>
+                                <el-option label="ISBN" value="ISBN"/>
+                                <el-option label="书名" value="name"/>
+                                <el-option label="作者" value="author"/>
+                            </el-select>
+                            <el-button slot="append" icon="el-icon-search"/>
+                        </el-input>
+                    </div>
                 </el-col>
             </el-row>
+
             <el-row class="tac">
                 <el-col>
                     <el-table
                             :data="bookTable"
                             class="book-table"
                             border
-                            height="530">
+                            height="520">
                         <el-table-column
                                 width="150"
                                 prop="bookID"
@@ -41,6 +58,13 @@
                                 width="80"
                                 prop="price"
                                 label="价格">
+                        </el-table-column>
+                        <el-table-column
+                                width="80"
+                                label="是否借出">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.isBorrowed?"已借出":"在馆"}}</span>
+                            </template>
                         </el-table-column>
                         <el-table-column label="操作" fixed="right" width="150">
                             <template slot-scope="scope">
@@ -70,7 +94,6 @@
                             value-key="bookID"
                             @select="handleSelect">
                         <le-template slot="prepend">书籍编号</le-template>
-                        <!--                        <el-button slot="append" icon="el-icon-search"/>-->
                     </el-autocomplete>
                     <div class="return-book-form">
                         <el-form :model="returnBookForm"
@@ -155,7 +178,7 @@
                              class="demo-dynamic">
                         <el-form-item prop="cardID" label="借书卡" :rules="[{required: true, message: '请输入借书卡号'},]">
                             <el-col :span="8">
-                                <el-input v-model="dynamicValidateForm.cardID"></el-input>
+                                <el-input v-model="dynamicValidateForm.cardID"/>
                             </el-col>
 
                         </el-form-item>
@@ -251,12 +274,12 @@
                     message: '已取消操作'
                 });
             },
-            closeReturnDialog(){
+            closeReturnDialog() {
                 this.dialogReturnBookVisible = false;
                 this.returnBookForm = '';
                 this.state = '';
             },
-            
+
             //增加书籍确认
             confirmAddBook(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -282,7 +305,7 @@
                                     type: 'success',
                                     message: '添加成功'
                                 });
-                                this.searchBook('', 'book_id')
+                                this.searchBook('', 'book_id');
                                 this.dialogAddBookVisible = false;
                                 this.$refs[formName].resetFields();
                             }).catch((error) => {
@@ -302,20 +325,20 @@
 
             },
             cancelAddBook() {
-                this.dialogAddBookVisible = false
+                this.dialogAddBookVisible = false;
                 this.$refs.addForm.resetFields();
                 this.$message({
                     type: 'info',
                     message: '已取消操作'
                 });
             },
-            closeAddDialog(){
-                this.dialogAddBookVisible = false
+            closeAddDialog() {
+                this.dialogAddBookVisible = false;
                 this.$refs.addForm.resetFields();
             },
             //修改书籍信息
             bookEdit(row) {
-                this.dialogModifyBookVisible = true
+                this.dialogModifyBookVisible = true;
                 this.bookForm = Object.assign({}, row)
             },
             //确认图书修改
@@ -344,7 +367,7 @@
                                     type: 'success',
                                     message: '修改成功'
                                 });
-                                this.searchBook('', 'book_id')
+                                this.searchBook('', 'book_id');
                                 this.dialogModifyBookVisible = false;
                             }).catch((error) => {
                                 window.console.log(error)
@@ -362,7 +385,7 @@
                 });
             },
             cancelBookEdit() {
-                this.dialogModifyBookVisible = false
+                this.dialogModifyBookVisible = false;
                 this.$message({
                     type: 'info',
                     message: '已取消操作'
@@ -425,9 +448,9 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let vm = this;
-                        window.console.log(vm.dynamicValidateForm.cardID)
-                        let books = []
-                        for(let item of vm.dynamicValidateForm.books){
+                        window.console.log(vm.dynamicValidateForm.cardID);
+                        let books = [];
+                        for (let item of vm.dynamicValidateForm.books) {
                             books.push(item.value)
                         }
                         this.$api({
@@ -438,11 +461,11 @@
                                 bookList: books
                             }
                         }).then((res) => {
-                            let message = ''
-                            if (res.code == 0){
-                                message="借阅成功"
-                            }else {
-                                message=res.message
+                            let message = '';
+                            if (res.code == 0) {
+                                message = "借阅成功"
+                            } else {
+                                message = res.message
                             }
                             vm.$message({
                                 type: 'success',
@@ -458,7 +481,7 @@
                 this.$refs[formName].resetFields();
             },
             removeBook(item) {
-                var index = this.dynamicValidateForm.books.indexOf(item)
+                let index = this.dynamicValidateForm.books.indexOf(item);
                 if (index !== -1) {
                     this.dynamicValidateForm.books.splice(index, 1)
                 }
@@ -488,12 +511,9 @@
                 state: '',
                 timeout: null,
                 searchType: "book_id",
-                dynamicValidateForm: {
-                    cardID: '',
-                    books: [{
-                        value: ''
-                    }],
-                },
+
+                inputBookValue: '',
+                searchBookType: 'name',
 
                 isLoadingAdd: false,
                 isLoadingReturn: false,
@@ -512,6 +532,7 @@
                     author: '',
                     press: '',
                     price: '',
+                    isBorrowed: ''
                 },
 
                 returnBookForm: {
@@ -529,6 +550,13 @@
                     author: '',
                     press: '',
                     price: '',
+                },
+
+                dynamicValidateForm: {
+                    cardID: '',
+                    books: [{
+                        value: ''
+                    }],
                 },
 
                 addRules: {
@@ -581,7 +609,17 @@
             };
         },
         watch: {
-            returnBookForm: function (book) {
+            inputBookValue(newInputValue) {
+                if (newInputValue && newInputValue.length > 0) {
+                    this.searchBook(newInputValue, this.searchBookType)
+                }else{
+                    this.searchBook(newInputValue, this.searchBookType)
+                }
+            },
+            searchBookType(newSearchType) {
+                this.searchBook(this.inputBookValue, newSearchType)
+            },
+            bookTable: function (book) {
                 window.console.log(book)
             }
         },
@@ -604,7 +642,7 @@
         color: #99a9bf;
     }
 
-    .demo-table-expand .el-form-item {
+    .demo-table-expand {
         margin-right: 0;
         margin-bottom: 0;
         width: 50%;
@@ -631,6 +669,12 @@
     }
 
     .borrow {
+        width: 45vw;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .search {
         width: 45vw;
         margin: 0 auto;
         position: relative;

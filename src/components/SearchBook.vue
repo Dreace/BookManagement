@@ -5,7 +5,7 @@
             <el-input placeholder="请输入内容" v-model="inputBookValue" class="input-with-select">
                 <el-select v-model="searchBookType" slot="prepend" placeholder="请选择">
                     <el-option label="图书号" value="book_id"/>
-                    <el-option label="IBSN" value="IBSN"/>
+                    <el-option label="ISBN" value="ISBN"/>
                     <el-option label="书名" value="name"/>
                     <el-option label="作者" value="author"/>
                 </el-select>
@@ -30,8 +30,8 @@
                         label="书名">
                 </el-table-column>
                 <el-table-column
-                        prop="IBSN"
-                        label="IBSN">
+                        prop=""
+                        label="ISBN">
                 </el-table-column>
                 <el-table-column
                         prop="author"
