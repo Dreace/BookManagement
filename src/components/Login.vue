@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="el-form-container">
+        <div class="login-container">
             <div class="login-text">登录简单图书管理系统</div>
             <el-form :model="form" :rules="rules" label-width="70px" class="el-form" ref="loginForm">
                 <el-form-item label="用户名" prop="userName">
@@ -61,7 +61,9 @@
                                 isLogin: true,
                                 name: res.data.name,
                                 permission: res.data.permission
-                            })
+                            });
+                            this.$store.commit("changeMenuIndex", "/bookManagement")
+                            this.$router.push("/bookManagement")
                         }).catch((error) => {
                             window.console.log(error)
                         })
@@ -90,7 +92,7 @@
         margin: 0 auto;
     }
 
-    .el-form-container {
+    .login-container {
         box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
         background-color: white;
         padding: 10px;

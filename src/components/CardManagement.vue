@@ -12,7 +12,7 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="grid-content">
-                        <el-input v-model="inputValue" placeholder="输入搜索内容">
+                        <el-input v-model="inputValue" placeholder="输入搜索内容" clearable>
                             <el-select v-model="searchType" slot="prepend" placeholder="请选择">
                                 <el-option label="卡号" value="card_id"/>
                                 <el-option label="姓名" value="cardholder"/>
@@ -107,15 +107,15 @@
                 </el-form-item>
             </el-form>
             <div slot="footer">
-                <el-button type="primary" @click="confirmTransactCard('ruleForm')" :loading="isLoading">办理</el-button>
                 <el-button @click="closeTransactCard">取消</el-button>
+                <el-button type="primary" @click="confirmTransactCard('ruleForm')" :loading="isLoading">办理</el-button>
             </div>
         </el-dialog>
         <el-dialog title="借书历史"
                    :visible.sync="cardHistoryDialog"
                    width="1000px"
                    @close="closeCardHistory">
-            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow"  height="450">
+            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow" height="450">
                 <el-table-column
                         label="单号"
                         width="300px"
@@ -212,6 +212,8 @@
             inputValue(newInputValue) {
                 if (newInputValue && newInputValue.length > 0) {
                     this.searchCard(newInputValue, this.searchType)
+                } else {
+                    this.searchCard(newInputValue, this.searchType)
                 }
             },
             searchType(newSearchType) {
@@ -232,6 +234,7 @@
             },
             cardHistory(row) {
                 this.cardHistoryDialog = true;
+                this.bookHistoryTable = []
                 this.$api({
                     method: "GET",
                     url: "GetCardBorrowList",
@@ -260,7 +263,7 @@
                 });
             },
             bookHistoryShow(row) {
-                if(row.books[0].name){
+                if (row.books[0].name) {
                     return
                 }
                 for (let book of row.books) {
@@ -387,20 +390,23 @@
 </script>
 
 <style>
-    .el-table__body-wrapper::-webkit-scrollbar{
+    .el-table__body-wrapper::-webkit-scrollbar {
         /*width: 0;*/
-        width: 3px;
+        width: 7px;
     }
-    .el-table__body-wrapper::-webkit-scrollbar-thumb{
+
+    .el-table__body-wrapper::-webkit-scrollbar-thumb {
         border-radius: 2px;
         height: 50px;
         background: #aeaeae;
     }
-    .el-table__body-wrapper::-webkit-scrollbar-track{
+
+    .el-table__body-wrapper::-webkit-scrollbar-track {
         box-shadow: inset 0 0 5px white;
         border-radius: 2px;
         background: white;
     }
+
     .el-select .el-input {
         width: 80px;
     }
