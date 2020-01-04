@@ -12,7 +12,7 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="grid-content">
-                        <el-input v-model="inputValue" placeholder="输入搜索内容">
+                        <el-input v-model="inputValue" placeholder="输入搜索内容" clearable>
                             <el-select v-model="searchType" slot="prepend" placeholder="请选择">
                                 <el-option label="卡号" value="card_id"/>
                                 <el-option label="姓名" value="cardholder"/>
@@ -93,7 +93,7 @@
         </div>
         <el-dialog title="办理借书卡"
                    :visible.sync="transactCardDialog"
-                   width="30%">
+                   width="30%" @close="closeTransactCard">
             <el-form :model="form" label-width="80px"
                      :rules="rules" ref="ruleForm" class="transactForm">
                 <el-form-item label="姓名" prop="name">
@@ -107,10 +107,66 @@
                 </el-form-item>
             </el-form>
             <div slot="footer">
+                <el-button @click="closeTransactCard">取消</el-button>
                 <el-button type="primary" @click="confirmTransactCard('ruleForm')" :loading="isLoading">办理</el-button>
-                <el-button @click="cancelTransactCard">取消</el-button>
             </div>
-
+        </el-dialog>
+        <el-dialog title="借书历史"
+                   :visible.sync="cardHistoryDialog"
+                   width="1000px"
+                   @close="closeCardHistory">
+            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow" height="450">
+                <el-table-column
+                        label="单号"
+                        width="300px"
+                        prop="slipID">
+                </el-table-column>
+                <el-table-column
+                        label="借书日期"
+                        width="250px">
+                    <template slot-scope="scope" v-if="scope.row.borrowingTime">
+                        <span> {{  new Date(scope.row.borrowingTime*1000).toLocaleString() }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="截止日期"
+                        width="250px">
+                    <template slot-scope="scope" v-if="scope.row.dueTime">
+                        <span> {{  new Date(scope.row.dueTime*1000).toLocaleString() }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="书籍数量"
+                        width="90px"
+                        prop="count">
+                </el-table-column>
+                <el-table-column type="expand">
+                    <template slot-scope="scope">
+                        <el-table :data="scope.row.books" border>
+                            <el-table-column
+                                    label="书籍编号"
+                                    prop="bookID">
+                            </el-table-column>
+                            <el-table-column
+                                    label="书名"
+                                    prop="name">
+                            </el-table-column>
+                            <el-table-column
+                                    label="作者"
+                                    prop="author">
+                            </el-table-column>
+                            <el-table-column
+                                    label="出版社"
+                                    prop="press">
+                            </el-table-column>
+                            <el-table-column
+                                    label="归还日期"
+                                    prop="returnTime">
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                </el-table-column>
+            </el-table>
         </el-dialog>
     </div>
 </template>
@@ -121,10 +177,14 @@
         data() {
             return {
                 cardTable: [],
+                cardHistoryTable: [],
+                bookHistoryTable: [],
                 inputValue: '',
+                bookMap: new Map(),
                 select: '卡号',
                 searchType: "card_id",
                 transactCardDialog: false,
+                cardHistoryDialog: false,
                 isLoading: false,
                 form: {
                     name: '',
@@ -146,11 +206,13 @@
             }
         },
         mounted() {
-            this.searchCard('','card_id')
+            this.searchCard('', 'card_id')
         },
         watch: {
             inputValue(newInputValue) {
                 if (newInputValue && newInputValue.length > 0) {
+                    this.searchCard(newInputValue, this.searchType)
+                } else {
                     this.searchCard(newInputValue, this.searchType)
                 }
             },
@@ -171,7 +233,54 @@
                 }).then(res => vm.cardTable = res.data);
             },
             cardHistory(row) {
-                window.console.log(row);
+                this.cardHistoryDialog = true;
+                this.bookHistoryTable = []
+                this.$api({
+                    method: "GET",
+                    url: "GetCardBorrowList",
+                    params: {
+                        cardID: row.cardID
+                    }
+                }).then(res => {
+                    let bookMap = {};
+                    let bookHistoryTable = [];
+                    for (let item of res.data) {
+                        if (!bookMap[item.slipID]) {
+                            bookMap[item.slipID] = []
+                        }
+                        bookMap[item.slipID].push(item)
+                    }
+                    for (let slip_id in bookMap) {
+                        bookHistoryTable.push({
+                            slipID: slip_id,
+                            count: bookMap[slip_id].length,
+                            borrowingTime: bookMap[slip_id][0].borrowingTime,
+                            dueTime: bookMap[slip_id][0].dueTime,
+                            books: bookMap[slip_id],
+                        })
+                    }
+                    this.bookHistoryTable = bookHistoryTable;
+                });
+            },
+            bookHistoryShow(row) {
+                if (row.books[0].name) {
+                    return
+                }
+                for (let book of row.books) {
+                    this.$api({
+                        method: "GET",
+                        url: "GetBookList",
+                        params: {
+                            keywords: book.bookID,
+                            type: "book_id"
+                        }
+                    }).then(res => {
+                        book.author = res.data[0].author;
+                        book.press = res.data[0].press;
+                        book.returnTime = book.isRepaid ? new Date(book.returnTime * 1000).toLocaleDateString() : "未归还";
+                        this.$set(book, "name", res.data[0].name);
+                    });
+                }
             },
             cardDelete(row) {
                 this.$confirm('将注销卡号 ' + row.cardID + ', 是否继续?', '确认注销', {
@@ -252,6 +361,7 @@
                                     message: '办理成功'
                                 });
                                 this.transactCardDialog = false;
+                                this.$refs.ruleForm.resetFields();
                             }).catch((error) => {
                                 window.console.log(error)
                             }).finally(() => this.isLoading = false)
@@ -266,21 +376,37 @@
                         return false;
                     }
                 });
-
             },
-            cancelTransactCard() {
-                this.transactCardDialog = false
-                this.$message({
-                    type: 'info',
-                    message: '已取消操作'
-                });
+            closeTransactCard() {
+                this.transactCardDialog = false;
+                this.$refs.ruleForm.resetFields();
+            },
+            closeCardHistory() {
+                this.cardHistoryDialog = false;
+                this.cardHistoryTable = [];
             }
-
         }
     }
 </script>
 
 <style>
+    .el-table__body-wrapper::-webkit-scrollbar {
+        /*width: 0;*/
+        width: 7px;
+    }
+
+    .el-table__body-wrapper::-webkit-scrollbar-thumb {
+        border-radius: 2px;
+        height: 50px;
+        background: #aeaeae;
+    }
+
+    .el-table__body-wrapper::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px white;
+        border-radius: 2px;
+        background: white;
+    }
+
     .el-select .el-input {
         width: 80px;
     }
@@ -300,7 +426,7 @@
         margin-top: 10px;
     }
 
-    .transactForm{
+    .transactForm {
         width: 20vw;
         margin: 0 auto;
     }
