@@ -64,17 +64,27 @@
                     if (valid) {
                         let vm = this;
                         window.console.log(vm.dynamicValidateForm.cardID)
+                        let books = []
+                        for(let item of vm.dynamicValidateForm.books){
+                            books.push(item.value)
+                        }
                         this.$api({
                             method: 'post',
                             url: '/Borrow',
                             data: {
                                 cardID: vm.dynamicValidateForm.cardID,
-                                bookList: vm.dynamicValidateForm.books
+                                bookList: books
                             }
                         }).then((res) => {
+                            let message = ''
+                            if (res.code == 0){
+                                message="借阅成功"
+                            }else {
+                                message=res.message
+                            }
                             vm.$message({
                                 type: 'success',
-                                message: res.message
+                                message: message
                             })
                         }).catch((error) => {
                             window.console.log(error)

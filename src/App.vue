@@ -44,19 +44,13 @@
                     <router-view/>
                 </keep-alive>
             </el-main>
-            <borrow-book></borrow-book>
         </el-container>
     </div>
 </template>
 
 <script>
-
-    // import SearchBook from "./components/SearchBook";
-
-    import BorrowBook from "./components/BorrowBook";
     export default {
         name: 'app',
-        components: {BorrowBook},
         data() {
             return {
                 menuIndex: 0
