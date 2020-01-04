@@ -85,31 +85,32 @@
                     </el-table>
                 </el-col>
             </el-row>
-            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="35%" @close="closeReturnDialog">
-                <div class="return-book-style">
+            <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="500px" @close="closeReturnDialog">
+                <div class="return-book">
                     <el-autocomplete
                             v-model="state"
-                            :fetch-suggestions="querySearchAsync"
+                            :fetch-suggestions="queryReturnSearchAsync"
                             placeholder="请输入书籍编号"
                             value-key="bookID"
-                            @select="handleSelect">
+                            @select="handleReturnSelect"
+                            clearable>
                         <le-template slot="prepend">书籍编号</le-template>
                     </el-autocomplete>
                     <div class="return-book-form">
                         <el-form :model="returnBookForm"
                                  ref="returnForm"
                                  label-position="left" class="demo-table-expand">
-                            <el-form-item label="图书名称">
-                                <span>{{ returnBookForm.name }}</span>
+                            <el-form-item label="图书名称" class="return-book-item">
+                                <span >{{ returnBookForm.name }}</span>
                             </el-form-item>
-                            <el-form-item label="ISBN">
+                            <el-form-item label="ISBN" class="return-book-item">
                                 <span>{{ returnBookForm.ISBN }}</span>
                             </el-form-item>
-                            <el-form-item label="作者">
+                            <el-form-item label="作者" class="return-book-item">
                                 <span>{{ returnBookForm.author }}</span>
                             </el-form-item>
-                            <el-form-item label="是否已借">
-                                <span>{{ returnBookForm.isBorrowed }}</span>
+                            <el-form-item label="出版社" class="return-book-item">
+                                <span>{{ returnBookForm.press }}</span>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -124,25 +125,24 @@
                 <el-form :model="addBookForm" :rules="addRules" ref="addForm"
                          label-width="100px" class="demo-ruleForm">
                     <el-form-item label="书籍名称" prop="name">
-                        <el-input v-model="addBookForm.name"/>
+                        <el-input v-model="addBookForm.name" clearable/>
                     </el-form-item>
                     <el-form-item label="ISBN" prop="ISBN">
-                        <el-input v-model="addBookForm.ISBN"/>
+                        <el-input v-model="addBookForm.ISBN" clearable/>
                     </el-form-item>
                     <el-form-item label="作者" prop="author">
-                        <el-input v-model="addBookForm.author"/>
+                        <el-input v-model="addBookForm.author" clearable/>
                     </el-form-item>
                     <el-form-item label="出版社" prop="press">
-                        <el-input v-model="addBookForm.press"/>
+                        <el-input v-model="addBookForm.press" clearable/>
                     </el-form-item>
                     <el-form-item label="价格" prop="price">
-                        <el-input v-model="addBookForm.price"/>
+                        <el-input v-model="addBookForm.price" clearable/>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="cancelAddBook">取 消</el-button>
-                    <el-button type="primary" @click="confirmAddBook('addForm')" :loading="isLoadingAdd">确 定
-                    </el-button>
+                    <el-button type="primary" @click="confirmAddBook('addForm')" :loading="isLoadingAdd">确 定</el-button>
                 </div>
             </el-dialog>
             <el-dialog title="修改书籍" :visible.sync="dialogModifyBookVisible" width="35%">
@@ -151,19 +151,19 @@
                         <el-input v-model="bookForm.bookID" disabled/>
                     </el-form-item>
                     <el-form-item label="书籍名称" prop="name">
-                        <el-input v-model="bookForm.name"/>
+                        <el-input v-model="bookForm.name" clearable/>
                     </el-form-item>
                     <el-form-item label="ISBN" prop="ISBN">
-                        <el-input v-model="bookForm.ISBN"/>
+                        <el-input v-model="bookForm.ISBN" clearable/>
                     </el-form-item>
                     <el-form-item label="作者" prop="author">
-                        <el-input v-model="bookForm.author"/>
+                        <el-input v-model="bookForm.author" clearable/>
                     </el-form-item>
                     <el-form-item label="出版社" prop="press">
-                        <el-input v-model="bookForm.press"/>
+                        <el-input v-model="bookForm.press" clearable/>
                     </el-form-item>
                     <el-form-item label="价格" prop="price">
-                        <el-input v-model.number="bookForm.price"/>
+                        <el-input v-model.number="bookForm.price" clearable/>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -172,39 +172,38 @@
                     </el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="35%">
-                <div class="borrow">
-                    <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
-                             class="demo-dynamic">
-                        <el-form-item prop="cardID" label="借书卡" :rules="[{required: true, message: '请输入借书卡号'},]">
-                            <el-col :span="8">
-                                <el-input v-model="dynamicValidateForm.cardID"/>
-                            </el-col>
+            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="500px" @close="closeBorrowDialog">
 
-                        </el-form-item>
-                        <el-form-item
-                                v-for="(book, index) in dynamicValidateForm.books"
-                                :label="'图书' + index"
-                                :key="book.key"
-                                :prop="'books.' + index + '.value'"
-                                :rules="{required: true, message: '图书号不能为空'}">
-                            <el-autocomplete
-                                    v-model="book.value"
-                                    :fetch-suggestions="querySearchAsync1"
-                                    placeholder="请输入书籍编号"
-                                    value-key="bookID"
-                                    @select="handleSelect1">
-                            </el-autocomplete>
-                            <el-button @click.prevent="removeBook(book)">删除</el-button>
-                        </el-form-item>
+                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
+                         class="demo-dynamic" :rules="borrowRules">
+                    <el-form-item prop="cardID" label="借书卡">
+                        <el-input v-model="dynamicValidateForm.cardID" class="borrow-input" clearable/>
+                    </el-form-item>
+                    <el-form-item
+                            v-for="(book, index) in dynamicValidateForm.books"
+                            :label="'图书 ' + (index + 1)"
+                            :key="book.key"
+                            :prop="book.value"
+                            :rules="borrowRules['book.value']">
+                        <el-autocomplete
+                                class="borrow-input"
+                                clearable
+                                v-model="book.value"
+                                :fetch-suggestions="queryBorrowSearchAsync"
+                                placeholder="请输入书籍编号"
+                                value-key="bookID">
+                        </el-autocomplete>
+                        <el-button @click.prevent="removeBorrowBook(book)" class="delete-borrow-button">删除
+                        </el-button>
+                    </el-form-item>
 
-                        <el-form-item>
-                            <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>
-                            <el-button @click="addBook">新增图书</el-button>
-                            <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
-                        </el-form-item>
-                    </el-form>
-                </div>
+                    <el-form-item>
+                        <el-button type="primary" @click="confirmBorrowBook('dynamicValidateForm')">提交</el-button>
+                        <el-button @click="addBook">新增图书</el-button>
+                        <el-button @click="resetBorrowBook('dynamicValidateForm')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+
             </el-dialog>
         </div>
     </div>
@@ -421,7 +420,7 @@
                 });
             },
             //选择书号触发
-            handleSelect() {
+            handleReturnSelect() {
                 let vm = this;
                 this.$api({
                     method: "GET",
@@ -434,7 +433,7 @@
             },
 
             //从服务器获得已借书籍ID
-            querySearchAsync(queryString, cb) {
+            queryReturnSearchAsync(queryString, cb) {
                 this.$api({
                     method: "GET",
                     url: "Return/BookList",
@@ -444,7 +443,7 @@
                 }).then((res) => cb(res.data));
             },
             //借阅书籍
-            submitForm(formName) {
+            confirmBorrowBook(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let vm = this;
@@ -461,26 +460,28 @@
                                 bookList: books
                             }
                         }).then((res) => {
-                            let message = '';
-                            if (res.code == 0) {
-                                message = "借阅成功"
-                            } else {
-                                message = res.message
-                            }
                             vm.$message({
                                 type: 'success',
-                                message: message
-                            })
+                                message: "借书成功"
+                            });
+                            this.$confirm("借书单号：" + res.data.slipID, "借书成功");
+                            this.dialogBorrowBookVisible = false;
+                            this.$refs[formName].resetFields();
                         }).catch((error) => {
                             window.console.log(error)
                         })
                     }
                 });
             },
-            resetForm(formName) {
+            resetBorrowBook(formName) {
                 this.$refs[formName].resetFields();
             },
-            removeBook(item) {
+            //关闭借书dialog
+            closeBorrowDialog() {
+                this.dialogBorrowBookVisible = false;
+                this.$refs.dynamicValidateForm.resetFields();
+            },
+            removeBorrowBook(item) {
                 let index = this.dynamicValidateForm.books.indexOf(item);
                 if (index !== -1) {
                     this.dynamicValidateForm.books.splice(index, 1)
@@ -491,7 +492,7 @@
                     value: ''
                 });
             },
-            querySearchAsync1(queryString, cb) {
+            queryBorrowSearchAsync(queryString, cb) {
                 this.$api({
                     method: "GET",
                     url: "Borrow/BookList",
@@ -499,9 +500,6 @@
                         "bookID": queryString
                     }
                 }).then((res) => cb(res.data));
-            },
-            handleSelect1(item) {
-                window.console.log(item);
             },
         },
 
@@ -540,6 +538,7 @@
                     name: '',
                     ISBN: '',
                     author: '',
+                    press:'',
                     isBorrowed: ''
                 },
 
@@ -605,6 +604,11 @@
                     price: [
                         {min: 0, max: 1000, type: "number", message: '大小在 0 到 1000 '}
                     ],
+                },
+
+                borrowRules: {
+                    cardID: [{required: true, message: '请输入借书卡号', trigger: 'blur'}],
+                    "book.value": [{required: true, message: '图书号不能为空', trigger: 'blur'}]
                 }
             };
         },
@@ -612,7 +616,7 @@
             inputBookValue(newInputValue) {
                 if (newInputValue && newInputValue.length > 0) {
                     this.searchBook(newInputValue, this.searchBookType)
-                }else{
+                } else {
                     this.searchBook(newInputValue, this.searchBookType)
                 }
             },
@@ -632,6 +636,7 @@
 </script>
 
 <style>
+    .
     .demo-table-expand {
         font-size: 0;
         width: 800px;
@@ -659,24 +664,30 @@
 
     }
 
-    .return-book-style {
-
+    .return-book {
         margin: 0 auto;
+        width: 400px;
     }
 
     .return-book-form {
         margin-top: 30px;
     }
 
-    .borrow {
+    .search {
         width: 45vw;
         margin: 0 auto;
         position: relative;
     }
 
-    .search {
-        width: 45vw;
-        margin: 0 auto;
-        position: relative;
+    .delete-borrow-button {
+        margin-left: 10px;
+    }
+
+    .borrow-input{
+        width: 250px;
+    }
+
+    .return-book-item{
+        width: 400px;
     }
 </style>
