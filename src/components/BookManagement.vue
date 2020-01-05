@@ -4,9 +4,15 @@
             <el-row>
                 <el-col :span="8">
                     <div v-show="$store.state.userInfo.isLogin">
-                        <el-button type="primary" @click="dialogAddBookVisible = true" v-if="$route.path==='/bookManagement'">增添书籍</el-button>
-                        <el-button type="warning" @click="dialogBorrowBookVisible = true" v-if="$route.path==='/borrowAndReturn'">借阅书籍</el-button>
-                        <el-button type="success" @click="dialogReturnBookVisible = true" v-show="$route.path==='/borrowAndReturn'">归还书籍</el-button>
+                        <el-button type="primary" @click="dialogAddBookVisible = true"
+                                   v-if="$route.path==='/bookManagement'">增添书籍
+                        </el-button>
+                        <el-button type="warning" @click="dialogBorrowBookVisible = true"
+                                   v-if="$route.path==='/borrowAndReturn'">借阅书籍
+                        </el-button>
+                        <el-button type="success" @click="dialogReturnBookVisible = true"
+                                   v-show="$route.path==='/borrowAndReturn'">归还书籍
+                        </el-button>
                     </div>
                 </el-col>
                 <el-col :span="8">
@@ -27,63 +33,26 @@
                 </el-col>
             </el-row>
 
-            <el-table
-                    :data="bookTable"
-                    class="book-table"
-                    border
-                    height="520">
-                <el-table-column
-                        width="150"
-                        prop="bookID"
-                        label="ID">
-                </el-table-column>
-                <el-table-column
-                        prop="name"
-                        label="书名">
-                </el-table-column>
-                <el-table-column
-                        width="150"
-                        prop="ISBN"
-                        label="ISBN">
-                </el-table-column>
-                <el-table-column
-                        prop="author"
-                        label="作者">
-                </el-table-column>
-                <el-table-column
-                        prop="press"
-                        label="出版社">
-                </el-table-column>
-                <el-table-column
-                        width="80"
-                        prop="price"
-                        label="价格">
-                </el-table-column>
-                <el-table-column
-                        width="80"
-                        label="是否借出">
+            <el-table :data="bookTable" class="book-table" border height="520">
+                <el-table-column width="150" prop="bookID" label="ID"/>
+                <el-table-column width="150" prop="name" label="书名"/>
+                <el-table-column width="150" prop="ISBN" label="ISBN"/>
+                <el-table-column prop="author" label="作者"/>
+                <el-table-column prop="press" label="出版社"/>
+                <el-table-column width="80" prop="price" label="价格"/>
+                <el-table-column width="80" label="是否借出">
                     <template slot-scope="scope">
                         <span>{{scope.row.isBorrowed?"已借出":"在馆"}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="200" v-if="$store.state.userInfo.isLogin && $route.path==='/bookManagement'">
+                <el-table-column label="操作" width="200" key="1"
+                                 v-if="$store.state.userInfo.isLogin && $route.path==='/bookManagement'">
                     <template slot-scope="scope">
-                        <el-button
-                                plain
-                                type="success"
-                                size="mini"
-                                @click="repeatAddBook(scope.row)">+1
+                        <el-button plain type="success" size="mini" @click="repeatAddBook(scope.row)">+1
                         </el-button>
-                        <el-button
-                                plain
-                                type="primary"
-                                size="mini"
-                                @click="bookEdit(scope.row)">编辑
+                        <el-button plain type="primary" size="mini" @click="bookEdit(scope.row)">编辑
                         </el-button>
-                        <el-button
-                                size="mini"
-                                type="danger"
-                                @click="bookDelete(scope.row)">删除
+                        <el-button size="mini" type="danger" @click="bookDelete(scope.row)">删除
                         </el-button>
                     </template>
                 </el-table-column>
@@ -151,7 +120,7 @@
                         <el-input v-model="addBookForm.press" clearable/>
                     </el-form-item>
                     <el-form-item label="价格" prop="price">
-                        <el-input v-model="addBookForm.price" clearable/>
+                        <el-input v-model.number="addBookForm.price" clearable/>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -160,7 +129,7 @@
                 </div>
             </el-dialog>
             <el-dialog title="修改书籍" :visible.sync="dialogModifyBookVisible" width="35%">
-                <el-form :model="bookForm" :rules="editRules" ref="editForm" label-width="100px" class="demo-ruleForm">
+                <el-form :model="bookForm" :rules="addRules" ref="editForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="书籍编号" prop="bookID">
                         <el-input v-model="bookForm.bookID" disabled/>
                     </el-form-item>
@@ -191,29 +160,31 @@
                 <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
                          class="demo-dynamic" :rules="borrowRules">
                     <el-form-item prop="cardID" label="借书卡">
-                        <el-input v-model="dynamicValidateForm.cardID" class="borrow-input" clearable/>
+                        <el-autocomplete
+                                class="borrow-input"
+                                clearable
+                                v-model="dynamicValidateForm.cardID"
+                                :fetch-suggestions="queryCardIDAsync"
+                                placeholder="借书卡号"
+                                value-key="cardID">
+                        </el-autocomplete>
                     </el-form-item>
                     <el-form-item
                             v-for="(book, index) in dynamicValidateForm.books"
                             :label="'图书 ' + (index + 1)"
                             :key="book.key"
-                            :prop="book.value"
+                            :prop="'books.' + index + '.value'"
                             :rules="borrowRules['book.value']">
                         <el-autocomplete
                                 class="borrow-input"
                                 clearable
                                 v-model="book.value"
                                 :fetch-suggestions="queryBorrowSearchAsync"
-                                placeholder="请输入书籍编号"
+                                placeholder="书籍编号"
                                 value-key="bookID">
                         </el-autocomplete>
-                        <el-button @click.prevent="removeBorrowBook(book)" class="delete-borrow-button">删除
-                        </el-button>
+                        <el-button @click.prevent="removeBorrowBook(book)" class="delete-borrow-button">删除</el-button>
                     </el-form-item>
-
-                    <!--                    <el-form-item>-->
-                    <!--                        -->
-                    <!--                    </el-form-item>-->
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="resetBorrowBook('dynamicValidateForm')">重置</el-button>
@@ -492,6 +463,15 @@
                     }
                 }).then((res) => cb(res.data));
             },
+            queryCardIDAsync(queryString, cb) {
+                this.$api({
+                    method: "GET",
+                    url: "GetPureCardList",
+                    params: {
+                        "cardID": queryString
+                    }
+                }).then((res) => cb(res.data));
+            }
         },
 
         data() {
@@ -550,55 +530,36 @@
                 },
 
                 addRules: {
-                    bookID: [
-                        {required: true, message: '请输入书籍编号', trigger: 'blur'},
-                        {min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur'}
-                    ],
                     name: [
-                        {required: true, message: '请输入书籍名称', trigger: 'blur'},
-                        {min: 0, max: 30, message: '长度在 0 到 30 个字符', trigger: 'blur'}
+                        {required: true, message: '书籍名称不能为空', trigger: 'blur'},
+                        {min: 1, max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur'}
                     ],
                     ISBN: [
-                        {required: true, message: '请输入书籍ISBN', trigger: 'blur'},
-                        {min: 0, max: 15, message: '长度在 0 到 15 个字符', trigger: 'blur'}
+                        {required: true, message: 'ISBN不能为空', trigger: 'blur'},
+                        {min: 13, max: 15, message: '长度在 13 到 15 个字符', trigger: 'blur'}
                     ],
                     author: [
-                        {required: true, message: '请输入作者', trigger: 'blur'},
-                        {min: 0, max: 30, message: '长度在 0 到 30 个字符', trigger: 'blur'}
-                    ],
-                    press: [
-                        {required: true, message: '请输入出版社', trigger: 'blur'},
-                        {min: 0, max: 30, message: '长度在 0 到 30 个字符', trigger: 'blur'}
-                    ],
-                    price: [
-                        {min: 0, max: 1000, type: "number", message: '大小在 0 到 1000 '}
-                    ],
-                },
-
-                editRules: {
-                    name: [
-                        {required: true, message: '请输入书籍名称', trigger: 'blur'},
-                        {min: 0, max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur'}
-                    ],
-                    ISBN: [
-                        {min: 0, max: 15, message: '长度在 0 到 15 个字符', trigger: 'blur'}
-                    ],
-                    author: [
-                        {required: false, message: '请输入作者', trigger: 'blur'},
+                        {required: true, message: '作者不能为空', trigger: 'blur'},
                         {min: 0, max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur'}
                     ],
                     press: [
-                        {required: true, message: '请输入出版社', trigger: 'blur'},
+                        {required: true, message: '出版社不能为空', trigger: 'blur'},
                         {min: 0, max: 100, message: '长度在 0 到 100 个字符', trigger: 'blur'}
                     ],
                     price: [
-                        {min: 0, max: 1000, type: "number", message: '大小在 0 到 1000 '}
+                        {required: true, message: '价格不能为空', trigger: 'blur'},
+                        {min: 0, max: 1000, type: "number", message: '价格只能在 0 到 1000 '}
                     ],
                 },
-
                 borrowRules: {
-                    cardID: [{required: true, message: '请输入借书卡号', trigger: 'blur'}],
-                    "book.value": [{required: true, message: '图书号不能为空', trigger: 'blur'}]
+                    cardID: [
+                        {required: true, message: '借书卡号不能为空', trigger: 'blur'},
+                        {min: 14, max: 14, message: '借书卡号只能为 14 位', trigger: 'blur'}
+                    ],
+                    "book.value": [
+                        {required: true, message: '图书号不能为空', trigger: 'blur'},
+                        {min: 14, max: 14, message: '图书号只能为 14 位', trigger: 'blur'}
+                    ]
                 }
             };
         },
@@ -623,6 +584,13 @@
 </script>
 
 <style>
+    .book-container .el-table__body {
+        width: 1211.5px !important;
+    }
+    .book-container .el-table__body, .el-table__footer, .el-table__header {
+        table-layout: unset !important;
+    }
+
     .return-book-form .el-form-item {
         margin-bottom: 0;
         /*margin-left: 20px;*/
