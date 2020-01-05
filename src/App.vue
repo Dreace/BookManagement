@@ -5,13 +5,13 @@
                 <el-row type="flex" class="row-bg" justify="space-around">
 
                     <el-col :span="3" class="app-name">
-                        <router-link :to="$store.state.userInfo.isLogin?'/bookManagement':'/searchBook'">
-                            <img src="./assets/name.png" alt="">
-                        </router-link>
+                        <!--                        <router-link :to="$store.state.userInfo.isLogin?'/bookManagement':'/searchBook'">-->
+                        <img src="./assets/name.png" alt="">
+                        <!--                        </router-link>-->
                     </el-col>
                     <el-col :span="10">
 
-                        <el-menu mode="horizontal" router :default-active="$store.state.menuIndex">
+                        <el-menu mode="horizontal" router :default-active="$route.path" :active="$route.path">
                             <el-menu-item index="/searchBook" v-show="!$store.state.userInfo.isLogin">
                                 <i class="el-icon-search"/>搜索图书
                             </el-menu-item>
@@ -56,7 +56,8 @@
         name: 'app',
         data() {
             return {
-                menuIndex: 0
+                menuIndex: 0,
+                activeIndex: this.$route.path
             }
         },
         methods: {
@@ -64,6 +65,7 @@
                 if (command === "logOut") {
                     this.$setCookie("session", "", -1);
                     this.$store.commit("clear");
+                    this.$router.push("/searchBook")
                 }
             },
         }
@@ -71,11 +73,15 @@
 </script>
 
 <style>
+
+    /*.el-table__body, .el-table__footer, .el-table__header {*/
+    /*    table-layout: unset !important;*/
+    /*}*/
+
     .el-dialog__footer {
         width: fit-content;
         margin: 0 auto;
     }
-
 
     a {
         text-decoration: none;
