@@ -7,7 +7,7 @@
                         <el-button type="primary" @click="dialogAddBookVisible = true"
                                    v-if="$route.path==='/bookManagement'">增添书籍
                         </el-button>
-                        <el-button type="warning" @click="dialogBorrowBookVisible = true"
+                        <el-button type="primary" @click="dialogBorrowBookVisible = true"
                                    v-if="$route.path==='/borrowAndReturn'">借阅书籍
                         </el-button>
                         <el-button type="success" @click="dialogReturnBookVisible = true"
@@ -45,7 +45,7 @@
                         <span>{{scope.row.isBorrowed?"已借出":"在馆"}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" key="1"
+                <el-table-column label="操作" width="200"
                                  v-if="$store.state.userInfo.isLogin && $route.path==='/bookManagement'">
                     <template slot-scope="scope">
                         <el-button plain type="success" size="mini" @click="repeatAddBook(scope.row)">+1
@@ -262,12 +262,13 @@
 
             repeatAddBook(row) {
                 this.dialogAddBookVisible = true;
-                this.$set(this.addBookForm, "name", row.name);
-                this.$set(this.addBookForm, "ISBN", row.ISBN);
-                this.$set(this.addBookForm, "author", row.author);
-                this.$set(this.addBookForm, "press", row.press);
-                this.$set(this.addBookForm, "price", row.price);
-                // this.addBookForm = Object.assign({},row)
+                setTimeout(() => {
+                    this.$set(this.addBookForm, "name", row.name);
+                    this.$set(this.addBookForm, "ISBN", row.ISBN);
+                    this.$set(this.addBookForm, "author", row.author);
+                    this.$set(this.addBookForm, "press", row.press);
+                    this.$set(this.addBookForm, "price", row.price);
+                }, 10)
             },
             //增加书籍确认
             confirmAddBook(formName) {
@@ -602,13 +603,13 @@
 </script>
 
 <style>
-    .book-container .el-table__body {
-        width: 1211.5px !important;
-    }
+    /*.book-container .el-table__body {*/
+    /*    width: 1211.5px !important;*/
+    /*}*/
 
-    .book-container .el-table__body, .el-table__footer, .el-table__header {
-        table-layout: unset !important;
-    }
+    /*.book-container .el-table__body, .el-table__footer, .el-table__header {*/
+    /*    table-layout: unset !important;*/
+    /*}*/
 
     .return-book-form .el-form-item {
         margin-bottom: 0;
