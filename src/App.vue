@@ -30,7 +30,7 @@
                     <el-col :span="3">
                         <div class=" header-right">
                             <router-link v-if="!$store.state.userInfo.isLogin" to="/login">
-                                <el-button icon="el-icon-user">登录</el-button>
+                                <el-button icon="el-icon-user">管理员登录</el-button>
                             </router-link>
                             <el-dropdown v-else @command="handleCommand">
                                 <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>

@@ -7,7 +7,7 @@
                         <el-button type="primary" @click="dialogAddBookVisible = true"
                                    v-if="$route.path==='/bookManagement'">增添书籍
                         </el-button>
-                        <el-button type="warning" @click="dialogBorrowBookVisible = true"
+                        <el-button type="primary" @click="dialogBorrowBookVisible = true"
                                    v-if="$route.path==='/borrowAndReturn'">借阅书籍
                         </el-button>
                         <el-button type="success" @click="dialogReturnBookVisible = true"
@@ -262,12 +262,13 @@
 
             repeatAddBook(row) {
                 this.dialogAddBookVisible = true;
-                this.$set(this.addBookForm, "name", row.name);
-                this.$set(this.addBookForm, "ISBN", row.ISBN);
-                this.$set(this.addBookForm, "author", row.author);
-                this.$set(this.addBookForm, "press", row.press);
-                this.$set(this.addBookForm, "price", row.price);
-                // this.addBookForm = Object.assign({},row)
+                setTimeout(() => {
+                    this.$set(this.addBookForm, "name", row.name);
+                    this.$set(this.addBookForm, "ISBN", row.ISBN);
+                    this.$set(this.addBookForm, "author", row.author);
+                    this.$set(this.addBookForm, "press", row.press);
+                    this.$set(this.addBookForm, "price", row.price);
+                }, 100)
             },
             //增加书籍确认
             confirmAddBook(formName) {
