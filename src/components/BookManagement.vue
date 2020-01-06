@@ -58,49 +58,55 @@
                 </el-table-column>
             </el-table>
             <el-dialog title="归还书籍" :visible.sync="dialogReturnBookVisible" width="500px"
-                       @close="closeReturnDialog('returnForm')">
+                       @close="closeReturnDialog(['returnDataForm','returnInputForm'])">
                 <div class="return-book">
-                    <el-autocomplete class="return-book-input"
-                                     v-model="state"
-                                     :fetch-suggestions="queryReturnSearchAsync"
-                                     placeholder="请输入书籍编号"
-                                     value-key="bookID"
-                                     @select="handleReturnSelect"
-                                     clearable>
-                        <template slot="prepend">书籍编号</template>
-                    </el-autocomplete>
-                    <div class="return-book-form">
-                        <el-form :model="returnBookForm"
-                                 ref="returnForm"
-                                 label-position="left" class="demo-table-expand">
-                            <el-form-item label="图书名称" class="return-book-item">
-                                <span>{{ returnBookForm.name }}</span>
-                            </el-form-item>
-                            <el-form-item label="ISBN" class="return-book-item">
-                                <span>{{ returnBookForm.ISBN }}</span>
-                            </el-form-item>
-                            <el-form-item label="作者" class="return-book-item">
-                                <span>{{ returnBookForm.author }}</span>
-                            </el-form-item>
-                            <el-form-item label="出版社" class="return-book-item">
-                                <span>{{ returnBookForm.press }}</span>
-                            </el-form-item>
-                            <el-form-item label="出借时间" class="return-book-item">
-                                <span v-if="returnBookForm.borrowingTime">{{new Date(returnBookForm.borrowingTime*1000).toLocaleString() }}</span>
-                            </el-form-item>
-                            <el-form-item label="应还期限" class="return-book-item">
+                    <el-form :model="returnBookIDForm" ref="returnInputForm" :rules="returnRules">
+                        <el-form-item prop="bookID">
+                            <el-autocomplete class="return-book-input"
+                                             v-model="returnBookIDForm.bookID"
+                                             :fetch-suggestions="queryReturnSearchAsync"
+                                             placeholder="请输入书籍编号"
+                                             value-key="bookID"
+                                             @select="handleReturnSelect"
+                                             clearable>
+                                <template slot="prepend">书籍编号</template>
+                            </el-autocomplete>
+                        </el-form-item>
+                        <div class="return-book-form">
+                            <el-form :model="returnBookForm"
+                                     ref="returnDataForm"
+                                     label-position="left" class="demo-table-expand">
+                                <el-form-item label="图书名称" class="return-book-item" prop="name">
+                                    <span>{{ returnBookForm.name }}</span>
+                                </el-form-item>
+                                <el-form-item label="ISBN" class="return-book-item" prop="ISBN">
+                                    <span>{{ returnBookForm.ISBN }}</span>
+                                </el-form-item>
+                                <el-form-item label="作者" class="return-book-item" prop="author">
+                                    <span>{{ returnBookForm.author }}</span>
+                                </el-form-item>
+                                <el-form-item label="出版社" class="return-book-item" prop="press">
+                                    <span>{{ returnBookForm.press }}</span>
+                                </el-form-item>
+                                <el-form-item label="出借时间" class="return-book-item" prop="borrowingTime">
+                                    <span v-if="returnBookForm.borrowingTime">{{new Date(returnBookForm.borrowingTime*1000).toLocaleString() }}</span>
+                                </el-form-item>
+                                <el-form-item label="应还期限" class="return-book-item" prop="dueTime">
                                 <span v-if="returnBookForm.dueTime">
                                     {{(new Date(returnBookForm.dueTime*1000).toLocaleString()) +(
                                     (Date.now() > returnBookForm.dueTime*1000)?"（已逾期"+
                                     Math.ceil((returnBookForm.dueTime - Date.now()/1000)/86400)+"天）":"")}}
                                 </span>
-                            </el-form-item>
-                        </el-form>
-                    </div>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </el-form>
+
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="closeReturnDialog('returnForm')">取 消</el-button>
-                    <el-button type="primary" @click="confirmReturnBook('returnForm')" :loading="isLoadingReturn">确 定
+                    <el-button @click="closeReturnDialog(['returnInputForm','returnDataForm'])">取 消</el-button>
+                    <el-button type="primary" @click="confirmReturnBook('returnInputForm')" :loading="isLoadingReturn">确
+                        定
                     </el-button>
                 </div>
             </el-dialog>
@@ -216,7 +222,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.isLoadingAdd = true;
-                        this.$confirm('将归还ID为：' + this.returnBookForm.bookID + '的图书', '确认归还', {
+                        this.$confirm('将归还 ID ：' + this.returnBookIDForm.bookID + ' 的图书', '确认归还', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
@@ -225,7 +231,7 @@
                                 method: "POST",
                                 url: "/Return",
                                 data: {
-                                    bookID: this.returnBookForm.bookID
+                                    bookID: this.returnBookIDForm.bookID
                                 }
                             }).then(() => {
                                 this.$message({
@@ -233,8 +239,6 @@
                                     message: '归还成功'
                                 });
                                 this.dialogReturnBookVisible = false;
-                                this.$refs[formName].resetFields();
-                                this.state = '';
                             }).catch((error) => {
                                 window.console.log(error)
                             }).finally(() => this.isLoadingReturn = false)
@@ -247,10 +251,13 @@
                 });
 
             },
-            closeReturnDialog(formName) {
+            closeReturnDialog(formNames) {
+                // window.console.log(this.$refs);
+                for (let formName of formNames) {
+                    // window.console.log(this.$refs[formName]);
+                    this.$refs[formName].resetFields();
+                }
                 this.dialogReturnBookVisible = false;
-                this.$refs[formName].resetFields();
-                this.state = '';
             },
 
             repeatAddBook(row) {
@@ -267,7 +274,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.isLoadingAdd = true;
-                        this.$confirm('将增添书名为' + this.addBookForm.name + '的图书', '确认添加', {
+                        this.$confirm('将增添书名为《' + this.addBookForm.name + '》的图书', '确认添加', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
@@ -320,7 +327,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.isLoadingEdit = true;
-                        this.$confirm('将修改ID为' + this.bookForm.bookID + '的图书', '确认修改', {
+                        this.$confirm('将修改 ID 为：' + this.bookForm.bookID + ' 的图书', '确认修改', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
@@ -359,7 +366,7 @@
             },
             //删除书籍信息
             bookDelete(row) {
-                this.$confirm('将删除书号 ' + row.bookID + '的图书, 是否继续?', '确认删除', {
+                this.$confirm('将删除书号：' + row.bookID + ' 的图书, 是否继续?', '确认删除', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -389,9 +396,12 @@
                     method: "GET",
                     url: "Return/BookDetail",
                     params: {
-                        bookID: this.state,
+                        bookID: this.returnBookIDForm.bookID,
                     }
-                }).then(res => vm.returnBookForm = res.data);
+                }).then(res => {
+                    // this.$set(vm.returnBookForm, "name", res.data.name);
+                    vm.returnBookForm = res.data
+                });
             },
 
             //从服务器获得已借书籍ID
@@ -494,6 +504,10 @@
 
                 formLabelWidth: '120px',
 
+                returnBookIDForm: {
+                    bookID: '',
+                },
+
                 bookForm: {
                     bookID: '',
                     name: '',
@@ -560,7 +574,11 @@
                         {required: true, message: '图书号不能为空', trigger: 'blur'},
                         {min: 14, max: 14, message: '图书号只能为 14 位', trigger: 'blur'}
                     ]
+                },
+                returnRules: {
+                    bookID: [{required: true, message: ' ', trigger: 'blur'}]
                 }
+
             };
         },
         watch: {
@@ -587,6 +605,7 @@
     .book-container .el-table__body {
         width: 1211.5px !important;
     }
+
     .book-container .el-table__body, .el-table__footer, .el-table__header {
         table-layout: unset !important;
     }
