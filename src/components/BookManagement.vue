@@ -447,11 +447,13 @@
                 });
             },
             resetBorrowBook(formName) {
+                this.dynamicValidateForm.books = [{value: ''}];
                 this.$refs[formName].resetFields();
             },
             //关闭借书dialog
             closeBorrowDialog() {
                 this.dialogBorrowBookVisible = false;
+                this.dynamicValidateForm.books = [{value: ''}];
                 this.$refs.dynamicValidateForm.resetFields();
             },
             removeBorrowBook(item) {
@@ -482,7 +484,7 @@
                         "cardID": queryString
                     }
                 }).then((res) => cb(res.data));
-            }
+            },
         },
 
         data() {
@@ -539,9 +541,7 @@
 
                 dynamicValidateForm: {
                     cardID: '',
-                    books: [{
-                        value: ''
-                    }],
+                    books: [{value: ''}],
                 },
 
                 addRules: {
