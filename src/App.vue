@@ -5,9 +5,7 @@
                 <el-row type="flex" class="row-bg" justify="space-around">
 
                     <el-col :span="3" class="app-name">
-                        <!--                        <router-link :to="$store.state.userInfo.isLogin?'/bookManagement':'/searchBook'">-->
                         <img src="./assets/name.png" alt="">
-                        <!--                        </router-link>-->
                     </el-col>
                     <el-col :span="10">
 

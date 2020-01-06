@@ -45,7 +45,7 @@
                         <span>{{scope.row.isBorrowed?"已借出":"在馆"}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" key="1"
+                <el-table-column label="操作" width="200"
                                  v-if="$store.state.userInfo.isLogin && $route.path==='/bookManagement'">
                     <template slot-scope="scope">
                         <el-button plain type="success" size="mini" @click="repeatAddBook(scope.row)">+1
@@ -603,13 +603,13 @@
 </script>
 
 <style>
-    .book-container .el-table__body {
-        width: 1211.5px !important;
-    }
+    /*.book-container .el-table__body {*/
+    /*    width: 1211.5px !important;*/
+    /*}*/
 
-    .book-container .el-table__body, .el-table__footer, .el-table__header {
-        table-layout: unset !important;
-    }
+    /*.book-container .el-table__body, .el-table__footer, .el-table__header {*/
+    /*    table-layout: unset !important;*/
+    /*}*/
 
     .return-book-form .el-form-item {
         margin-bottom: 0;
