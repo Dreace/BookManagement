@@ -268,7 +268,7 @@
                     this.$set(this.addBookForm, "author", row.author);
                     this.$set(this.addBookForm, "press", row.press);
                     this.$set(this.addBookForm, "price", row.price);
-                }, 100)
+                }, 10)
             },
             //增加书籍确认
             confirmAddBook(formName) {
