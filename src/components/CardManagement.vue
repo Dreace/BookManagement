@@ -24,78 +24,43 @@
                     </div>
                 </el-col>
             </el-row>
-
-            <el-table
-                    :data="cardTable"
-                    class="card-table"
-                    stripe
-                    border
-                    height="500">
-                <el-table-column
-                        prop="cardID"
-                        label="卡号"
-                        width="200">
-                </el-table-column>
-                <el-table-column
-                        label="姓名"
-                        width="130">
+            <el-table :data="cardTable" class="card-table" border height="500">
+                <el-table-column prop="cardID" label="卡号" width="200"/>
+                <el-table-column label="姓名" width="130">
                     <template slot-scope="scope">
                         <i class="el-icon-user"/>
                         <span style="margin-left: 10px">{{ scope.row.cardholder }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column
-                        label="开卡日期">
+                <el-table-column label="开卡日期">
                     <template slot-scope="scope" v-if="scope.row.date">
                         <i class="el-icon-date"/>
                         <span style="margin-left: 10px">{{ new Date(scope.row.date*1000).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column
-                        label="联系电话">
+                <el-table-column label="联系电话">
                     <template slot-scope="scope">
                         <i class="el-icon-phone-outline"/>
                         <span style="margin-left: 10px">{{ scope.row.telephone }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column
-                        label="邮箱地址">
+                <el-table-column label="邮箱地址">
                     <template slot-scope="scope">
                         <i class="el-icon-message"/>
                         <span style="margin-left: 10px">{{ scope.row.email }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column
-                        fixed="right"
-                        label="操作"
-                        width="210px">
+                <el-table-column fixed="right" label="操作" width="210px">
                     <template slot-scope="scope">
-                        <el-button
-                                size="mini"
-                                type="warning"
-                                plain
-                                @click="cardHistory(scope.row)">历史
-                        </el-button>
-                        <el-button
-                                size="mini"
-                                type="primary"
-                                plain
-                                @click="cardReplenish(scope.row)">补办
-                        </el-button>
-                        <el-button
-                                size="mini"
-                                type="danger"
-                                @click="cardDelete(scope.row)">注销
-                        </el-button>
+                        <el-button size="mini" type="warning" plain @click="cardHistory(scope.row)">历史</el-button>
+                        <el-button size="mini" type="primary" plain @click="cardReplenish(scope.row)">补办</el-button>
+                        <el-button size="mini" type="danger" @click="cardDelete(scope.row)">注销</el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
-        <el-dialog title="办理借书卡"
-                   :visible.sync="transactCardDialog"
-                   width="30%" @close="closeTransactCard">
-            <el-form :model="form" label-width="80px"
-                     :rules="rules" ref="ruleForm" class="transactForm">
+        <el-dialog title="办理借书卡" :visible.sync="transactCardDialog" width="30%" @close="closeTransactCard">
+            <el-form :model="form" label-width="80px" :rules="rules" ref="ruleForm" class="transactForm">
                 <el-form-item label="姓名" prop="name">
                     <el-input v-model="form.name" autocomplete="off"/>
                 </el-form-item>
@@ -111,58 +76,28 @@
                 <el-button type="primary" @click="confirmTransactCard('ruleForm')" :loading="isLoading">办理</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="借书历史"
-                   :visible.sync="cardHistoryDialog"
-                   width="1000px"
-                   @close="closeCardHistory">
-            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow" height="450">
-                <el-table-column
-                        label="单号"
-                        width="300px"
-                        prop="slipID">
-                </el-table-column>
-                <el-table-column
-                        label="借书日期"
-                        width="250px">
+        <el-dialog title="借书历史" :visible.sync="cardHistoryDialog" width="1000px" @close="closeCardHistory">
+            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow" height="450" width="900px">
+                <el-table-column label="单号" width="300px" prop="slipID"/>
+                <el-table-column label="借书日期" width="250px">
                     <template slot-scope="scope" v-if="scope.row.borrowingTime">
                         <span> {{  new Date(scope.row.borrowingTime*1000).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column
-                        label="截止日期"
-                        width="250px">
+                <el-table-column label="截止日期" width="250px">
                     <template slot-scope="scope" v-if="scope.row.dueTime">
                         <span> {{  new Date(scope.row.dueTime*1000).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column
-                        label="书籍数量"
-                        width="90px"
-                        prop="count">
-                </el-table-column>
-                <el-table-column type="expand">
+                <el-table-column label="书籍数量" width="90px" prop="count"/>
+                <el-table-column type="expand" height="100%">
                     <template slot-scope="scope">
                         <el-table :data="scope.row.books" border>
-                            <el-table-column
-                                    label="书籍编号"
-                                    prop="bookID">
-                            </el-table-column>
-                            <el-table-column
-                                    label="书名"
-                                    prop="name">
-                            </el-table-column>
-                            <el-table-column
-                                    label="作者"
-                                    prop="author">
-                            </el-table-column>
-                            <el-table-column
-                                    label="出版社"
-                                    prop="press">
-                            </el-table-column>
-                            <el-table-column
-                                    label="归还日期"
-                                    prop="returnTime">
-                            </el-table-column>
+                            <el-table-column label="书籍编号" prop="bookID" width="150"/>
+                            <el-table-column label="书名" prop="name" width="200"/>
+                            <el-table-column label="作者" prop="author" width="150"/>
+                            <el-table-column label="出版社" prop="press" width="170"/>
+                            <el-table-column label="归还日期" prop="returnTime" width="150"/>
                         </el-table>
                     </template>
                 </el-table-column>
@@ -193,7 +128,7 @@
                 },
                 rules: {
                     name: [{required: true, type: "string", message: '输入姓名', trigger: 'blur'},
-                        {min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur'}],
+                        {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}],
                     telephone: [{
                         required: true,
                         pattern: /^1[0-9]{10}$|^[569][0-9]{7}$/,
@@ -234,7 +169,7 @@
             },
             cardHistory(row) {
                 this.cardHistoryDialog = true;
-                this.bookHistoryTable = []
+                this.bookHistoryTable = [];
                 this.$api({
                     method: "GET",
                     url: "GetCardBorrowList",
@@ -362,14 +297,11 @@
                                 });
                                 this.transactCardDialog = false;
                                 this.$refs.ruleForm.resetFields();
+                                this.searchCard(this.inputValue, this.searchType)
                             }).catch((error) => {
                                 window.console.log(error)
                             }).finally(() => this.isLoading = false)
                         }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '已取消操作'
-                            });
                             this.isLoading = false;
                         });
                     } else {
@@ -390,6 +322,18 @@
 </script>
 
 <style>
+    /*.el-table__expanded-cell .el-table th.gutter {*/
+    /*    display: none !important;*/
+    /*}*/
+
+    /*.el-table th.gutter {*/
+    /*    display: table-cell !important;*/
+    /*}*/
+
+    /*.el-table__body, .el-table__footer, .el-table__header {*/
+    /*    table-layout: unset !important;*/
+    /*}*/
+
     .el-table__body-wrapper::-webkit-scrollbar {
         /*width: 0;*/
         width: 7px;
@@ -412,6 +356,7 @@
     }
 
     .grid-content {
+        width: 100%;
         border-radius: 4px;
         min-height: 36px;
     }

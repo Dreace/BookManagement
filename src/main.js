@@ -45,6 +45,13 @@ new Vue({
                 this.$store.commit("init", JSON.parse(value))
             }
         }
+        if (this.$route.path === '/') {
+            if (this.$store.state.userInfo.isLogin) {
+                this.$router.push("/bookManagement")
+            } else {
+                this.$router.push("/searchBook")
+            }
+        }
     }
 }).$mount('#app');
 
