@@ -322,17 +322,17 @@
 </script>
 
 <style>
-    .el-table__expanded-cell .el-table th.gutter {
-        display: none !important;
-    }
+    /*.el-table__expanded-cell .el-table th.gutter {*/
+    /*    display: none !important;*/
+    /*}*/
 
-    .el-table th.gutter {
-        display: table-cell !important;
-    }
+    /*.el-table th.gutter {*/
+    /*    display: table-cell !important;*/
+    /*}*/
 
-    .el-table__body, .el-table__footer, .el-table__header {
-        table-layout: unset !important;
-    }
+    /*.el-table__body, .el-table__footer, .el-table__header {*/
+    /*    table-layout: unset !important;*/
+    /*}*/
 
     .el-table__body-wrapper::-webkit-scrollbar {
         /*width: 0;*/
