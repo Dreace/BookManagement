@@ -22,9 +22,9 @@
                     <div class="search">
                         <el-input placeholder="请输入内容" v-model="inputBookValue" class="input-with-select" clearable>
                             <el-select v-model="searchBookType" slot="prepend" placeholder="请选择">
+                                <el-option label="书名" value="name"/>
                                 <el-option label="书号" value="book_id"/>
                                 <el-option label="ISBN" value="ISBN"/>
-                                <el-option label="书名" value="name"/>
                                 <el-option label="作者" value="author"/>
                             </el-select>
                             <el-button slot="append" icon="el-icon-search"/>
@@ -161,7 +161,7 @@
                     </el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="500px" @close="closeBorrowDialog" class="borrowDialog">
+            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="500px" @close="closeBorrowDialog">
                 <div class="scrollbar">
                     <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
                              class="demo-dynamic" :rules="borrowRules">
@@ -497,7 +497,6 @@
                 bookTable: [],
                 state: '',
                 timeout: null,
-                searchType: "book_id",
 
                 inputBookValue: '',
                 searchBookType: 'name',
@@ -671,7 +670,7 @@
     }
 
     .scrollbar{
-        height: 30vh;
+        height: 33vh;
         overflow: auto;
     }
 </style>
