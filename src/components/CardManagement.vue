@@ -230,19 +230,14 @@
                             cardID: row.cardID
                         }
                     }).then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '注销成功'
+                        this.$notify({
+                            title: '注销成功',
+                            type: 'success'
                         });
                         this.searchCard(this.inputValue, this.searchType)
                     }).catch((error) => {
                         window.console.log(error)
                     })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消操作'
-                    });
                 });
             },
             cardReplenish(row) {
@@ -258,19 +253,14 @@
                             cardID: row.cardID
                         }
                     }).then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '补办成功'
+                        this.$notify({
+                            title: '补办成功',
+                            type: 'success'
                         });
                         this.searchCard(this.inputValue, this.searchType)
                     }).catch((error) => {
                         window.console.log(error)
                     })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消操作'
-                    });
                 });
             },
             confirmTransactCard(formName) {
@@ -291,9 +281,9 @@
                                     email: this.form.email
                                 }
                             }).then(() => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '办理成功'
+                                this.$notify({
+                                    title: '办理成功',
+                                    type: 'success'
                                 });
                                 this.transactCardDialog = false;
                                 this.$refs.ruleForm.resetFields();
@@ -322,20 +312,7 @@
 </script>
 
 <style>
-    /*.el-table__expanded-cell .el-table th.gutter {*/
-    /*    display: none !important;*/
-    /*}*/
-
-    /*.el-table th.gutter {*/
-    /*    display: table-cell !important;*/
-    /*}*/
-
-    /*.el-table__body, .el-table__footer, .el-table__header {*/
-    /*    table-layout: unset !important;*/
-    /*}*/
-
     .el-table__body-wrapper::-webkit-scrollbar {
-        /*width: 0;*/
         width: 7px;
     }
 

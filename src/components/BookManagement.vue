@@ -234,10 +234,11 @@
                                     bookID: this.returnBookIDForm.bookID
                                 }
                             }).then(() => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '归还成功'
+                                this.$notify({
+                                    title: '归还成功',
+                                    type: 'success'
                                 });
+                                this.searchBook('', 'book_id');
                                 this.dialogReturnBookVisible = false;
                             }).catch((error) => {
                                 window.console.log(error)
@@ -291,9 +292,9 @@
                                     price: this.addBookForm.price
                                 }
                             }).then(() => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '添加成功'
+                                this.$notify({
+                                    title: '添加成功',
+                                    type: 'success'
                                 });
                                 this.searchBook('', 'book_id');
                                 this.dialogAddBookVisible = false;
@@ -345,9 +346,9 @@
                                     price: this.bookForm.price
                                 }
                             }).then(() => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '修改成功'
+                                this.$notify({
+                                    title: '修改成功',
+                                    type: 'success'
                                 });
                                 this.searchBook('', 'book_id');
                                 this.dialogModifyBookVisible = false;
@@ -379,9 +380,9 @@
                             bookID: row.bookID
                         }
                     }).then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功'
+                        this.$notify({
+                            title: '删除成功',
+                            type: 'success'
                         });
                         this.searchBook('', 'book_id')
                     }).catch((error) => {
@@ -433,11 +434,13 @@
                                 bookList: books
                             }
                         }).then((res) => {
-                            vm.$message({
-                                type: 'success',
-                                message: "借书成功"
+                            vm.$notify({
+                                title: '借书成功',
+                                message:"借书单号：" + res.data.slipID+"借书成功",
+                                duration: 0,
+                                type: 'success'
                             });
-                            this.$confirm("借书单号：" + res.data.slipID, "借书成功");
+                            this.searchBook('', 'book_id');
                             this.dialogBorrowBookVisible = false;
                             this.$refs[formName].resetFields();
                         }).catch((error) => {
@@ -603,17 +606,8 @@
 </script>
 
 <style>
-    /*.book-container .el-table__body {*/
-    /*    width: 1211.5px !important;*/
-    /*}*/
-
-    /*.book-container .el-table__body, .el-table__footer, .el-table__header {*/
-    /*    table-layout: unset !important;*/
-    /*}*/
-
     .return-book-form .el-form-item {
         margin-bottom: 0;
-        /*margin-left: 20px;*/
     }
 
     .return-book-input {

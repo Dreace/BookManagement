@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Message} from 'element-ui'
+import {Notification} from 'element-ui'
 import apiUrl from "@/utils/api.config";
 
 axios.defaults.baseURL = apiUrl;
@@ -22,10 +22,9 @@ api.interceptors.response.use(
                 setTimeout(() => top.location.href = '/login', 1000)
 
             }
-            Message({
-                message: data.message,
+            Notification({
+                title: data.message,
                 type: 'error',
-                duration: 5 * 1000
             });
             return Promise.reject(data.message)
         } else {
@@ -34,10 +33,9 @@ api.interceptors.response.use(
     },
     error => {
         window.console.error(error);
-        Message({
-            message: error.message,
+        Notification({
+            title: error.message,
             type: 'error',
-            duration: 5 * 1000
         });
         return Promise.reject(error)
     }
