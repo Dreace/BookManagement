@@ -238,6 +238,7 @@
                                     type: 'success',
                                     message: '归还成功'
                                 });
+                                this.searchBook('', 'book_id');
                                 this.dialogReturnBookVisible = false;
                             }).catch((error) => {
                                 window.console.log(error)
@@ -437,6 +438,7 @@
                                 type: 'success',
                                 message: "借书成功"
                             });
+                            this.searchBook('', 'book_id');
                             this.$confirm("借书单号：" + res.data.slipID, "借书成功");
                             this.dialogBorrowBookVisible = false;
                             this.$refs[formName].resetFields();
