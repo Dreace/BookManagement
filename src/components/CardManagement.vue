@@ -77,7 +77,7 @@
             </div>
         </el-dialog>
         <el-dialog title="借书历史" :visible.sync="cardHistoryDialog" width="1000px" @close="closeCardHistory">
-            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow" height="450" width="900px">
+            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow"  height="60vh" >
                 <el-table-column label="单号" width="300px" prop="slipID"/>
                 <el-table-column label="借书日期" width="250px">
                     <template slot-scope="scope" v-if="scope.row.borrowingTime">
@@ -90,9 +90,9 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="书籍数量" width="90px" prop="count"/>
-                <el-table-column type="expand" height="100%">
+                <el-table-column type="expand" >
                     <template slot-scope="scope">
-                        <el-table :data="scope.row.books" border>
+                        <el-table :data="scope.row.books">
                             <el-table-column label="书籍编号" prop="bookID" width="150"/>
                             <el-table-column label="书名" prop="name" width="200"/>
                             <el-table-column label="作者" prop="author" width="150"/>
