@@ -161,37 +161,39 @@
                     </el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="500px" @close="closeBorrowDialog">
+            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="500px" @close="closeBorrowDialog" class="borrowDialog">
+                <div class="scrollbar">
+                    <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
+                             class="demo-dynamic" :rules="borrowRules">
+                        <el-form-item prop="cardID" label="借书卡">
+                            <el-autocomplete
+                                    class="borrow-input"
+                                    clearable
+                                    v-model="dynamicValidateForm.cardID"
+                                    :fetch-suggestions="queryCardIDAsync"
+                                    placeholder="借书卡号"
+                                    value-key="cardID">
+                            </el-autocomplete>
+                        </el-form-item>
+                        <el-form-item
+                                v-for="(book, index) in dynamicValidateForm.books"
+                                :label="'图书 ' + (index + 1)"
+                                :key="book.key"
+                                :prop="'books.' + index + '.value'"
+                                :rules="borrowRules['book.value']">
+                            <el-autocomplete
+                                    class="borrow-input"
+                                    clearable
+                                    v-model="book.value"
+                                    :fetch-suggestions="queryBorrowSearchAsync"
+                                    placeholder="书籍编号"
+                                    value-key="bookID">
+                            </el-autocomplete>
+                            <el-button @click.prevent="removeBorrowBook(book)" class="delete-borrow-button">删除</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
 
-                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
-                         class="demo-dynamic" :rules="borrowRules">
-                    <el-form-item prop="cardID" label="借书卡">
-                        <el-autocomplete
-                                class="borrow-input"
-                                clearable
-                                v-model="dynamicValidateForm.cardID"
-                                :fetch-suggestions="queryCardIDAsync"
-                                placeholder="借书卡号"
-                                value-key="cardID">
-                        </el-autocomplete>
-                    </el-form-item>
-                    <el-form-item
-                            v-for="(book, index) in dynamicValidateForm.books"
-                            :label="'图书 ' + (index + 1)"
-                            :key="book.key"
-                            :prop="'books.' + index + '.value'"
-                            :rules="borrowRules['book.value']">
-                        <el-autocomplete
-                                class="borrow-input"
-                                clearable
-                                v-model="book.value"
-                                :fetch-suggestions="queryBorrowSearchAsync"
-                                placeholder="书籍编号"
-                                value-key="bookID">
-                        </el-autocomplete>
-                        <el-button @click.prevent="removeBorrowBook(book)" class="delete-borrow-button">删除</el-button>
-                    </el-form-item>
-                </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="resetBorrowBook('dynamicValidateForm')">重置</el-button>
                     <el-button @click="addBook">新增图书</el-button>
@@ -571,12 +573,12 @@
                 },
                 borrowRules: {
                     cardID: [
-                        {required: true, message: '借书卡号不能为空', trigger: 'blur'},
-                        {min: 14, max: 14, message: '借书卡号只能为 14 位', trigger: 'blur'}
+                        {required: true, message: '借书卡号不能为空', trigger: 'blur, change'},
+                        {min: 14, max: 14, message: '借书卡号只能为 14 位', trigger: 'blur, change'}
                     ],
                     "book.value": [
-                        {required: true, message: '图书号不能为空', trigger: 'blur'},
-                        {min: 14, max: 14, message: '图书号只能为 14 位', trigger: 'blur'}
+                        {required: true, message: '图书号不能为空', trigger: 'blur, change'},
+                        {min: 14, max: 14, message: '图书号只能为 14 位', trigger: 'blur, change'}
                     ]
                 },
                 returnRules: {
@@ -666,5 +668,10 @@
 
     .return-book-item {
         width: 400px;
+    }
+
+    .scrollbar{
+        height: 30vh;
+        overflow: auto;
     }
 </style>
