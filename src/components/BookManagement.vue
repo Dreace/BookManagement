@@ -5,7 +5,13 @@
                 <el-col :span="8">
                     <div v-show="$store.state.userInfo.isLogin">
                         <el-button type="primary" @click="dialogAddBookVisible = true"
+                                   icon="el-icon-circle-plus-outline"
                                    v-if="$route.path==='/bookManagement'">增添书籍
+                        </el-button>
+                        <el-button type="danger"
+                                   icon="el-icon-remove-outline"
+                                   @click="removeSelect"
+                                   v-if="$route.path==='/bookManagement'">删除选中
                         </el-button>
                         <el-button type="primary" @click="dialogBorrowBookVisible = true"
                                    v-if="$route.path==='/borrowAndReturn'">借阅书籍
@@ -22,9 +28,9 @@
                     <div class="search">
                         <el-input placeholder="请输入内容" v-model="inputBookValue" class="input-with-select" clearable>
                             <el-select v-model="searchBookType" slot="prepend" placeholder="请选择">
+                                <el-option label="书名" value="name"/>
                                 <el-option label="书号" value="book_id"/>
                                 <el-option label="ISBN" value="ISBN"/>
-                                <el-option label="书名" value="name"/>
                                 <el-option label="作者" value="author"/>
                             </el-select>
                             <el-button slot="append" icon="el-icon-search"/>
@@ -33,7 +39,13 @@
                 </el-col>
             </el-row>
 
-            <el-table :data="bookTable" class="book-table" border height="520">
+            <el-table :data="bookTable" class="book-table" border height="520"
+                      tooltip-effect="dark"
+                      @selection-change="handleSelectionChange">>
+                <el-table-column
+                        type="selection"
+                        width="55">
+                </el-table-column>
                 <el-table-column width="150" prop="bookID" label="ID"/>
                 <el-table-column width="150" prop="name" label="书名"/>
                 <el-table-column width="150" prop="ISBN" label="ISBN"/>
@@ -48,7 +60,7 @@
                 <el-table-column label="操作" width="200"
                                  v-if="$store.state.userInfo.isLogin && $route.path==='/bookManagement'">
                     <template slot-scope="scope">
-                        <el-button plain type="success" size="mini" @click="repeatAddBook(scope.row)">+1
+                        <el-button plain type="success" size="mini" icon="el-icon-plus" @click="repeatAddBook(scope.row)">
                         </el-button>
                         <el-button plain type="primary" size="mini" @click="bookEdit(scope.row)">编辑
                         </el-button>
@@ -161,7 +173,7 @@
                     </el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="500px" @close="closeBorrowDialog" class="borrowDialog">
+            <el-dialog title="借阅书籍" :visible.sync="dialogBorrowBookVisible" width="500px" @close="closeBorrowDialog">
                 <div class="scrollbar">
                     <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px"
                              class="demo-dynamic" :rules="borrowRules">
@@ -368,6 +380,35 @@
             cancelBookEdit() {
                 this.dialogModifyBookVisible = false;
             },
+            //删除选中
+            removeSelect(){
+                this.$confirm('将批量删除图书, 是否继续?', '确认删除', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api({
+                        method: "POST",
+                        url: "/DeleteBook",
+                        data: {
+                            bookID: this.Selection[0].bookID
+                        }
+                    }).then(() => {
+                        this.$notify({
+                            title: '删除成功',
+                            type: 'success'
+                        });
+                        this.searchBook('', 'book_id')
+                    }).catch((error) => {
+                        window.console.log(error)
+                    })
+                }).catch(() => {
+                });
+                window.console.log(this.Selection)
+            },
+            handleSelectionChange(val){
+                this.Selection = val;
+            },
             //删除书籍信息
             bookDelete(row) {
                 this.$confirm('将删除书号：' + row.bookID + ' 的图书, 是否继续?', '确认删除', {
@@ -438,7 +479,7 @@
                         }).then((res) => {
                             vm.$notify({
                                 title: '借书成功',
-                                message:"借书单号：" + res.data.slipID+"借书成功",
+                                message:"借书单号：" + res.data.slipID+" 借书成功",
                                 duration: 0,
                                 type: 'success'
                             });
@@ -497,7 +538,8 @@
                 bookTable: [],
                 state: '',
                 timeout: null,
-                searchType: "book_id",
+
+                Selection: [],
 
                 inputBookValue: '',
                 searchBookType: 'name',
@@ -671,7 +713,7 @@
     }
 
     .scrollbar{
-        height: 30vh;
+        height: 33vh;
         overflow: auto;
     }
 </style>
