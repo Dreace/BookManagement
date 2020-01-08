@@ -4,11 +4,11 @@
             <div class="login-text">登录简单图书管理系统</div>
             <el-form :model="form" :rules="rules" label-width="70px" class="el-form" ref="loginForm">
                 <el-form-item label="用户名" prop="userName">
-                    <el-input v-model="form.userName" placeholder="请输入用户名" prefix-icon="el-icon-user-solid"/>
+                    <el-input v-model="form.userName" placeholder="请输入用户名" prefix-icon="el-icon-user-solid" clearable/>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
                     <el-input v-model="form.password" placeholder="请输入密码" show-password
-                              prefix-icon="el-icon-s-promotion"/>
+                              prefix-icon="el-icon-s-promotion" clearable/>
                 </el-form-item>
                 <el-form-item class="login-button">
                     <el-button type="primary" @click="onSubmit('loginForm')">登录</el-button>
@@ -77,7 +77,7 @@
 
 <style scoped>
     .login-button {
-        width: 80%;
+        width: 100%;
         margin: 0 auto;
     }
 

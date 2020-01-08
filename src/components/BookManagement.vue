@@ -438,7 +438,7 @@
                         }).then((res) => {
                             vm.$notify({
                                 title: '借书成功',
-                                message:"借书单号：" + res.data.slipID+"借书成功",
+                                message:"借书单号：" + res.data.slipID+" 借书成功",
                                 duration: 0,
                                 type: 'success'
                             });
