@@ -140,6 +140,9 @@
                     <el-form-item label="价格" prop="price">
                         <el-input v-model.number="addBookForm.price" clearable/>
                     </el-form-item>
+                    <el-form-item label="数量" prop="number">
+                        <el-input v-model.number="addBookForm.number" clearable/>
+                    </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="cancelAddBook">取 消</el-button>
@@ -290,7 +293,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.isLoadingAdd = true;
-                        this.$confirm('将增添书名为《' + this.addBookForm.name + '》的图书', '确认添加', {
+                        this.$confirm('将增添 ' + this.addBookForm.number +' 本，书名为《' + this.addBookForm.name + '》的图书', '确认添加', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
@@ -584,6 +587,7 @@
                     author: '',
                     press: '',
                     price: '',
+                    number: ''
                 },
 
                 dynamicValidateForm: {
@@ -611,6 +615,10 @@
                     price: [
                         {required: true, message: '价格不能为空', trigger: 'blur'},
                         {min: 0, max: 1000, type: "number", message: '价格只能在 0 到 1000 '}
+                    ],
+                    number: [
+                        {required: true, message: '数量不能为空', trigger: 'blur'},
+                        {min: 0, max: 1000, type: "number", message: '数量只能在 0 到 1000 之间'}
                     ],
                 },
                 borrowRules: {
