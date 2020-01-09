@@ -77,7 +77,7 @@
             </div>
         </el-dialog>
         <el-dialog title="借书历史" :visible.sync="cardHistoryDialog" width="1000px" @close="closeCardHistory">
-            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow" height="450" width="900px">
+            <el-table :data="bookHistoryTable" @expand-change="bookHistoryShow"  height="60vh" >
                 <el-table-column label="单号" width="300px" prop="slipID"/>
                 <el-table-column label="借书日期" width="250px">
                     <template slot-scope="scope" v-if="scope.row.borrowingTime">
@@ -90,9 +90,9 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="书籍数量" width="90px" prop="count"/>
-                <el-table-column type="expand" height="100%">
+                <el-table-column type="expand" >
                     <template slot-scope="scope">
-                        <el-table :data="scope.row.books" border>
+                        <el-table :data="scope.row.books">
                             <el-table-column label="书籍编号" prop="bookID" width="150"/>
                             <el-table-column label="书名" prop="name" width="200"/>
                             <el-table-column label="作者" prop="author" width="150"/>
@@ -194,7 +194,7 @@
                             books: bookMap[slip_id],
                         })
                     }
-                    this.bookHistoryTable = bookHistoryTable;
+                    this.bookHistoryTable = bookHistoryTable.reverse();
                 });
             },
             bookHistoryShow(row) {
@@ -230,19 +230,14 @@
                             cardID: row.cardID
                         }
                     }).then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '注销成功'
+                        this.$notify({
+                            title: '注销成功',
+                            type: 'success'
                         });
                         this.searchCard(this.inputValue, this.searchType)
                     }).catch((error) => {
                         window.console.log(error)
                     })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消操作'
-                    });
                 });
             },
             cardReplenish(row) {
@@ -258,19 +253,14 @@
                             cardID: row.cardID
                         }
                     }).then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '补办成功'
+                        this.$notify({
+                            title: '补办成功',
+                            type: 'success'
                         });
                         this.searchCard(this.inputValue, this.searchType)
                     }).catch((error) => {
                         window.console.log(error)
                     })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消操作'
-                    });
                 });
             },
             confirmTransactCard(formName) {
@@ -291,9 +281,9 @@
                                     email: this.form.email
                                 }
                             }).then(() => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '办理成功'
+                                this.$notify({
+                                    title: '办理成功',
+                                    type: 'success'
                                 });
                                 this.transactCardDialog = false;
                                 this.$refs.ruleForm.resetFields();
@@ -322,20 +312,7 @@
 </script>
 
 <style>
-    /*.el-table__expanded-cell .el-table th.gutter {*/
-    /*    display: none !important;*/
-    /*}*/
-
-    /*.el-table th.gutter {*/
-    /*    display: table-cell !important;*/
-    /*}*/
-
-    /*.el-table__body, .el-table__footer, .el-table__header {*/
-    /*    table-layout: unset !important;*/
-    /*}*/
-
     .el-table__body-wrapper::-webkit-scrollbar {
-        /*width: 0;*/
         width: 7px;
     }
 
