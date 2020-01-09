@@ -194,7 +194,7 @@
                             books: bookMap[slip_id],
                         })
                     }
-                    this.bookHistoryTable = bookHistoryTable;
+                    this.bookHistoryTable = bookHistoryTable.reverse();
                 });
             },
             bookHistoryShow(row) {
